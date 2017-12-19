@@ -3,6 +3,17 @@ try:
 except ImportError:
     from distutils.core import setup
 
+import os
+
+def package_files(directory):
+    paths = []
+    for (path, directories, filenames) in os.walk(directory):
+        for filename in filenames:
+            paths.append(os.path.join('..', path, filename))
+    return paths
+
+json_files = package_files('basalunit/tests/somafeat_stim')
+
 setup(
     name='basalunit',
     version='0.1',
@@ -13,6 +24,7 @@ setup(
               'basalunit.tests',
               'basalunit.scores',
               'basalunit.plots'],
+    package_data={'basalunit': json_files},
     url='https://github.com/appukuttan-shailesh/basalunit',
     download_url = 'https://github.com/appukuttan-shailesh/basalunit/archive/0.1.tar.gz', 
     keywords = ['basal ganglia', 'electrical', 'efel', 'bluepyopt', 'validation framework'],

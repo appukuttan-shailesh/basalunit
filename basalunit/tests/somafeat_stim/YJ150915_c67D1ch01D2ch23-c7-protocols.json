@@ -1,0 +1,1010 @@
+{
+    "APWaveform_546": {
+        "stimuli": [
+            {
+                "delay": 5.0, 
+                "amp": 0.2574, 
+                "duration": 50.0, 
+                "totduration": 60.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 60.0, 
+                "totduration": 60.0
+            }
+        ]
+    }, 
+    "APWaveform_547": {
+        "stimuli": [
+            {
+                "delay": 5.0, 
+                "amp": 0.3083, 
+                "duration": 50.0, 
+                "totduration": 60.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 60.0, 
+                "totduration": 60.0
+            }
+        ]
+    }, 
+    "APWaveform_548": {
+        "stimuli": [
+            {
+                "delay": 5.0, 
+                "amp": 0.3602, 
+                "duration": 50.0, 
+                "totduration": 60.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 60.0, 
+                "totduration": 60.0
+            }
+        ]
+    }, 
+    "APWaveform_549": {
+        "stimuli": [
+            {
+                "delay": 5.0, 
+                "amp": 0.4117, 
+                "duration": 50.0, 
+                "totduration": 60.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 60.0, 
+                "totduration": 60.0
+            }
+        ]
+    }, 
+    "APWaveform_550": {
+        "stimuli": [
+            {
+                "delay": 5.0, 
+                "amp": 0.4633, 
+                "duration": 50.0, 
+                "totduration": 60.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 60.0, 
+                "totduration": 60.0
+            }
+        ]
+    }, 
+    "APWaveform_551": {
+        "stimuli": [
+            {
+                "delay": 5.0, 
+                "amp": 0.5138, 
+                "duration": 50.0, 
+                "totduration": 60.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1542, 
+                "duration": 60.0, 
+                "totduration": 60.0
+            }
+        ]
+    }, 
+    "Delta_625": {
+        "stimuli": [
+            {
+                "delay": 20.0, 
+                "amp": -0.5138, 
+                "duration": 5.0, 
+                "totduration": 325.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1542, 
+                "duration": 325.0, 
+                "totduration": 325.0
+            }
+        ]
+    }, 
+    "HighResThResp_622": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": 0.1287, 
+                "duration": 500.0, 
+                "totduration": 850.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1542, 
+                "duration": 850.0, 
+                "totduration": 850.0
+            }
+        ]
+    }, 
+    "IDrest_590": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1544, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDrest_591": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1805, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDrest_592": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.2061, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDrest_593": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.2315, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDrest_594": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.2574, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDrest_595": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.2831, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDrest_596": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.3084, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDrest_597": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.3349, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDrest_598": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.3603, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDrest_599": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.386, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh-sub_600": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1159, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh-sub_601": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1196, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_603": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1274, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_604": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1315, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_605": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1355, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_606": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1391, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_607": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1431, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_608": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1464, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_609": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1504, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_610": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1544, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_611": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1581, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_612": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1621, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_613": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1662, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_614": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1702, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_615": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1742, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_616": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1778, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_617": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1818, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_618": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1858, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_619": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1891, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_620": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.1931, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IV-supra_541": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": 0.1287, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1542, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "IV-supra_542": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": 0.1544, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "IV_529": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": -0.1791, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "IV_530": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": -0.1539, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "IV_531": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": -0.1285, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "IV_532": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": -0.1027, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "IV_533": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": -0.077, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "IV_534": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": -0.0516, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1542, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "IV_535": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": -0.0253, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "IV_536": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": 0.0, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "IV_537": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": 0.026, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "IV_538": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": 0.0518, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1542, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "IV_539": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": 0.0772, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1542, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "IV_540": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": 0.1033, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1542, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "SpontAPs_623": {
+        "stimuli": [
+            {
+                "delay": 200.0, 
+                "amp": 0.1543, 
+                "duration": 10000.0, 
+                "totduration": 10400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1542, 
+                "duration": 10400.0, 
+                "totduration": 10400.0
+            }
+        ]
+    }, 
+    "Spontaneous_621": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": 0.0, 
+                "duration": 8900.0, 
+                "totduration": 10000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 10000.0, 
+                "totduration": 10000.0
+            }
+        ]
+    }, 
+    "TesteCode_521": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": 0.2969, 
+                "duration": 500.0, 
+                "totduration": 1200.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 1200.0, 
+                "totduration": 1200.0
+            }
+        ]
+    }, 
+    "TesteCode_522": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": 0.2374, 
+                "duration": 500.0, 
+                "totduration": 1200.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 1200.0, 
+                "totduration": 1200.0
+            }
+        ]
+    }, 
+    "TesteCode_523": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": 0.1979, 
+                "duration": 500.0, 
+                "totduration": 1200.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.1541, 
+                "duration": 1200.0, 
+                "totduration": 1200.0
+            }
+        ]
+    }, 
+    "sAHP_552": {
+        "stimuli": [
+            {
+                "delay": 600.0, 
+                "amp": 0.1069, 
+                "duration": 200.0, 
+                "totduration": 2900.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.2403, 
+                "duration": 2900.0, 
+                "totduration": 2900.0
+            }
+        ]
+    }, 
+    "sAHP_553": {
+        "stimuli": [
+            {
+                "delay": 600.0, 
+                "amp": 0.1713, 
+                "duration": 200.0, 
+                "totduration": 2900.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.2403, 
+                "duration": 2900.0, 
+                "totduration": 2900.0
+            }
+        ]
+    }, 
+    "sAHP_554": {
+        "stimuli": [
+            {
+                "delay": 600.0, 
+                "amp": 0.2354, 
+                "duration": 200.0, 
+                "totduration": 2900.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.2403, 
+                "duration": 2900.0, 
+                "totduration": 2900.0
+            }
+        ]
+    }, 
+    "sAHP_555": {
+        "stimuli": [
+            {
+                "delay": 600.0, 
+                "amp": 0.2998, 
+                "duration": 200.0, 
+                "totduration": 2900.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.2403, 
+                "duration": 2900.0, 
+                "totduration": 2900.0
+            }
+        ]
+    }, 
+    "sAHP_556": {
+        "stimuli": [
+            {
+                "delay": 600.0, 
+                "amp": 0.3642, 
+                "duration": 200.0, 
+                "totduration": 2900.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.2403, 
+                "duration": 2900.0, 
+                "totduration": 2900.0
+            }
+        ]
+    }, 
+    "sAHP_557": {
+        "stimuli": [
+            {
+                "delay": 600.0, 
+                "amp": 0.4278, 
+                "duration": 200.0, 
+                "totduration": 2900.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.2403, 
+                "duration": 2900.0, 
+                "totduration": 2900.0
+            }
+        ]
+    }
+}
