@@ -11,10 +11,43 @@ import bluepyopt.ephys as ephys
 import tarfile
 import zipfile
 import sciunit
+import multiprocessing
+import functools
 from neuron import h
+
+try:
+    import copy_reg
+except:
+    import copyreg
+
+from types import MethodType
+
+def _pickle_method(method):
+    func_name = method.im_func.__name__
+    obj = method.im_self
+    cls = method.im_class
+    return _unpickle_method, (func_name, obj, cls)
+
+def _unpickle_method(func_name, obj, cls):
+    for cls in cls.mro():
+        try:
+            func = cls.__dict__[func_name]
+        except KeyError:
+            pass
+        else:
+            break
+    return func.__get__(obj, cls)
+
+try:
+	copyreg.pickle(MethodType, _pickle_method, _unpickle_method)
+except:
+	copy_reg.pickle(MethodType, _pickle_method, _unpickle_method)
+
+# ==============================================================================
 
 class CellModel(sciunit.Model):
     def __init__(self, model_path=None, cell_type=None, hof_index=None):
+        # `model_path` is the path to the model's zip file
         if not os.path.isfile(model_path):
             raise IOError("Invalid file path: {}".format(model_path))
 
@@ -166,8 +199,15 @@ class CellModel(sciunit.Model):
         h.nrn_load_dll(os.path.join(self.base_path, libpath))
         os.chdir(self.owd)
 
+# ==============================================================================
 
-class CellEvaluator:
+
+class CellEvaluator(object):
+    """
+    def load_protocols(self, filename):
+        protocol_definitions = json.load(open(filename))
+        return protocol_definitions
+    """
 
     def define_protocols(self, filename):
         protocol_definitions = json.load(open(filename))
@@ -216,7 +256,7 @@ class CellEvaluator:
                 recordings)
         return protocols
 
-    def define_fitness_calculator(self, features):
+    def define_fitness_calculator(self, protocols, features):
         feature_definitions = features
         objectives = []
         for protocol_name, locations in feature_definitions.iteritems():
@@ -225,7 +265,7 @@ class CellEvaluator:
                     feature_name = '%s.%s.%s' % (
                         protocol_name, location, efel_feature_name)
                     recording_names = {'': '%s.%s.v' % (protocol_name, location)}
-                    stimulus = self.protocols[protocol_name].stimuli[0]
+                    stimulus = protocols[protocol_name].stimuli[0]
                     stim_start = stimulus.step_delay
                     if location == 'soma':
                         threshold = -20
@@ -248,18 +288,10 @@ class CellEvaluator:
         fitcalc = ephys.objectivescalculators.ObjectivesCalculator(objectives)
         return fitcalc
 
-    def combine_scores(self, score_dict, weight_dict=None):
-        score = 0
-        for key in score_dict:
-            weight = weight_dict[key] if weight_dict else 1.0
-            score += weight * score_dict[key]
-        return score
-
-    def create(self, cell_model=None, protocols_path=None, features=None):
-        """Create cell evaluator"""
+    def __init__(self, cell_model=None, protocols_path=None, features=None, params=None):
         opt_params = [p.name for p in cell_model.params.values() if not p.frozen]
         self.protocols = self.define_protocols(protocols_path)
-        self.calculator = self.define_fitness_calculator(features)
+        self.calculator = self.define_fitness_calculator(self.protocols, features)
 
         self.evaluator = ephys.evaluators.CellEvaluator(
             cell_model=cell_model,
@@ -269,7 +301,12 @@ class CellEvaluator:
             sim=ephys.simulators.NrnSimulator())
 
     def run_protocols(self, params):
-        test_responses = self.evaluator.run_protocols(
-            protocols=self.protocols.values(),
-            param_values=params)
-        return test_responses
+        """
+        npool = multiprocessing.cpu_count() - 1
+        pool = multiprocessing.Pool(npool, maxtasksperchild=1)
+        run_protocols_ = functools.partial(self.evaluator.run_protocols, param_values=params)
+        test_responses = pool.map(run_protocols_, self.protocols.values(), chunksize=1)
+        """
+        traces = self.evaluator.run_protocols(protocols=self.protocols.values(),
+                                              param_values=params)
+        return traces

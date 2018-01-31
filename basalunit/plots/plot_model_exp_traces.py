@@ -20,7 +20,7 @@ class ModelExpTraces:
     def create(self):
         # TODO: expdata and junction_potential to be implemented after
         # mapping of expdata to protocols obtained
-        responses = self.testObj.prediction
+        responses = self.testObj.pred_traces
         junction_potential = self.testObj.junction_potential
 
         MAX_FIGS_PER_PAGE = 5
@@ -51,4 +51,5 @@ class ModelExpTraces:
         for fig in fig_list:
             pdf.savefig(fig, dpi=600)
         pdf.close()
+        plt.close('all')
         return filepath
