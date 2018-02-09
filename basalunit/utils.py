@@ -76,7 +76,7 @@ class CellModel(sciunit.Model):
         morphology_path = None
         for myfile in os.listdir(os.path.join(self.base_path, 'morphology')):
             if myfile.endswith(".swc"):
-                print "Morphology used: ", myfile
+                print("Morphology used: ", myfile)
                 morphology_path = os.path.join(self.base_path, 'morphology', myfile)
         if not morphology_path:
             raise Exception("No .swc file found in model's morphology directory.")
@@ -203,14 +203,26 @@ class CellModel(sciunit.Model):
 
 
 class CellEvaluator(object):
+    def __init__(self, cell_model=None, protocol_definitions=None, features=None, params=None):
+        opt_params = [p.name for p in cell_model.params.values() if not p.frozen]
+        self.protocols = self.define_protocols(protocol_definitions)
+        self.calculator = self.define_fitness_calculator(self.protocols, features)
+
+        self.evaluator = ephys.evaluators.CellEvaluator(
+            cell_model=cell_model,
+            param_names=opt_params,
+            fitness_protocols=self.protocols,
+            fitness_calculator=self.calculator,
+            sim=ephys.simulators.NrnSimulator())
+
     """
     def load_protocols(self, filename):
         protocol_definitions = json.load(open(filename))
         return protocol_definitions
     """
 
-    def define_protocols(self, filename):
-        protocol_definitions = json.load(open(filename))
+    def define_protocols(self, protocol_definitions):
+        #protocol_definitions = json.load(open(filename))
         protocols = {}
         soma_loc = ephys.locations.NrnSeclistCompLocation(
             name='soma',
@@ -287,18 +299,6 @@ class CellEvaluator(object):
                     objectives.append(objective)
         fitcalc = ephys.objectivescalculators.ObjectivesCalculator(objectives)
         return fitcalc
-
-    def __init__(self, cell_model=None, protocols_path=None, features=None, params=None):
-        opt_params = [p.name for p in cell_model.params.values() if not p.frozen]
-        self.protocols = self.define_protocols(protocols_path)
-        self.calculator = self.define_fitness_calculator(self.protocols, features)
-
-        self.evaluator = ephys.evaluators.CellEvaluator(
-            cell_model=cell_model,
-            param_names=opt_params,
-            fitness_protocols=self.protocols,
-            fitness_calculator=self.calculator,
-            sim=ephys.simulators.NrnSimulator())
 
     def run_protocols(self, params):
         """
