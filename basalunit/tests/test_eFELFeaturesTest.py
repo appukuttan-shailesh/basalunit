@@ -5,6 +5,10 @@ import sciunit
 import sciunit.scores
 import pkg_resources
 from pprint import pprint
+import os.path
+import copy
+from datetime import datetime
+import pickle
 
 from basalunit.utils import CellEvaluator
 from basalunit.scores import BU_ZScore
@@ -20,14 +24,15 @@ class eFELfeaturesTest(sciunit.Test):
                  observation_dir=None,
                  cell_type=None,
                  base_directory=None,
-                 junction_potential=0):
+                 junction_potential=0,
+                 use_cache=True):
         cell_types = {"msn_d1":"YJ150915_c67D1ch01D2ch23-c6-protocols",
                       "msn_d2":"YJ150915_c67D1ch01D2ch23-c7-protocols"}
         if not cell_type in cell_types.keys():
             raise TypeError("Invalid cell_type for SomaticFeaturesTest!")
-        self.stim_file = pkg_resources.resource_filename("basalunit", "tests/somafeat_stim/" + cell_types[cell_type] + ".json")
-        #with open(stim_file, 'r') as f:
-		#	self.config = json.load(f)
+        stim_file = pkg_resources.resource_filename("basalunit", "tests/somafeat_stim/" + cell_types[cell_type] + ".json")
+        with open(stim_file, 'r') as f:
+			self.protocol_definitions = json.load(f)
 
         description = ("Tests somatic features under current injection of varying amplitudes.")
         #XXXXXXXXXXXXXXXXXXXXXself.required_capabilities = (cap.ProvidesDensityInfo,)
@@ -44,6 +49,7 @@ class eFELfeaturesTest(sciunit.Test):
         self.base_directory = base_directory
         self.observation_dir = observation_dir
         self.junction_potential = junction_potential
+        self.use_cache = use_cache
 
     #----------------------------------------------------------------------
 
@@ -58,11 +64,44 @@ class eFELfeaturesTest(sciunit.Test):
         self.model_name = model.name
         if not self.base_directory:
             self.base_directory = model.base_path
-        self.directory_output = os.path.join(self.base_directory, 'validation_results')
+
+        # Create output directory
+        self.path_test_output = os.path.join(self.base_directory, 'validation_results', 'efel_feat', self.model_name, datetime.now().strftime("%Y%m%d-%H%M%S"))
+        if not os.path.exists(self.path_test_output):
+            os.makedirs(self.path_test_output)
+
+        # Verify that observation data for all requested protocols is available, and vice versa
+        no_observations = list(set(self.protocol_definitions) - set(self.observation))
+        if len(no_observations) > 0:
+            raise ValueError("No observation data found for following protocols: ".format(no_observations))
+        no_protocols = list(set(self.observation) - set(self.protocol_definitions))
+        for key in no_protocols:
+            self.observation.pop(key)
+        observations_new = copy.deepcopy(self.observation)
+        protcols_new = copy.deepcopy(self.protocol_definitions)
+
+        model_hash = model.hash
+        cache_path = os.path.abspath(os.path.join(self.path_test_output, "../cache", model_hash))
+        cached_traces = {}
+        cached_features = {}
+        if self.use_cache:
+            if not os.path.exists(os.path.join(cache_path)):
+                print("Note: no cached data for this model specification (hash)!")
+            else:
+                print("***** Using cache to retrieve relevant model data *****")
+                print("Cached data found for following protocols: ")
+                for key in self.observation.keys():
+                    if (os.path.exists(os.path.join(cache_path, key+"_feats.json")))  and (os.path.exists(os.path.join(cache_path, key+"_trace.pkl"))):
+                        print("\t"+key)
+                        with open(os.path.join(cache_path, key+"_feats.json"), 'r') as f1, open(os.path.join(cache_path, key+"_trace.pkl"), 'r') as f2:
+                            cached_features[key] = json.load(f1)
+                            cached_traces[key+".soma.v"] = pickle.load(f2)
+                        observations_new.pop(key)
+                        protcols_new.pop(key)
 
         self.cell_evaluator = CellEvaluator(cell_model=model.cell,
-                                            protocols_path=self.stim_file,
-                                            features=self.observation,
+                                            protocol_definitions=protcols_new,
+                                            features=observations_new,
                                             params=model.params)
         self.pred_traces = self.cell_evaluator.run_protocols(params=model.params)
         prediction = {}
@@ -70,17 +109,22 @@ class eFELfeaturesTest(sciunit.Test):
         for objective in self.cell_evaluator.calculator.objectives:
             for feature in objective.features:
                 # e.g. recording name = `APWaveform_548.soma.v`
-                # this should be changed to {APWaveform_548: {soma: {efel_feature_name: feature_value} } }
+                # this is changed to {APWaveform_548: {soma: {efel_feature_name: feature_value} } }
                 feat_name_parts = feature.recording_names.values()[0].split('.')
                 nested_set(prediction, [feat_name_parts[0], feat_name_parts[1], feature.efel_feature_name], feature.calculate_feature(self.pred_traces))
+
+        if not os.path.exists(cache_path):
+            os.makedirs(cache_path)
+        for key in observations_new.keys():
+            with open(os.path.join(cache_path, key+"_feats.json"), 'w') as f:
+                json.dump(prediction[key], f, indent=4, sort_keys=True)
+            with open(os.path.join(cache_path, key+"_trace.pkl"), 'w') as f:
+                pickle.dump(self.pred_traces[key+".soma.v"], f)
+        prediction.update(cached_features)
+        self.pred_traces.update(cached_traces)
+
         # Saving current model "hall of fame" parameters to `test instance`
         self.model_params = model.params
-
-        # print "======================================1"
-        # print "self.observation  = ", self.observation # 61
-        # print "self.pred_traces  = ", self.pred_traces # 61
-        # print "prediction  = ", prediction             # 61
-        # print "======================================2"
         return prediction
 
     #----------------------------------------------------------------------
@@ -88,17 +132,6 @@ class eFELfeaturesTest(sciunit.Test):
     def compute_score(self, observation, prediction):
         """Implementation of sciunit.Test.score_prediction."""
         self.score, self.score_dict, self.prob_list = BU_ZScore.compute(observation, prediction)
-        # print "======================================3"
-        # print "self.score  = ", self.score
-        # print "self.score_dict  = ", self.score_dict
-        # print "self.prob_list  = ", self.prob_list
-        # print "======================================4"
-
-        # create output directory
-        self.path_test_output = os.path.join(self.directory_output, 'efel_feat', self.model_name)
-        if not os.path.exists(self.path_test_output):
-            os.makedirs(self.path_test_output)
-
         self.observation = observation
         self.prediction = prediction
 
