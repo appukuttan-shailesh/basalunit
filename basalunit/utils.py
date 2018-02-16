@@ -46,16 +46,18 @@ except:
 # ==============================================================================
 
 class CellModel(sciunit.Model):
-    def __init__(self, model_path=None, cell_type=None, hof_index=None):
+    def __init__(self, model_path=None, cell_type=None, hof_index=None, model_name=None):
         # `model_path` is the path to the model's zip file
         if not os.path.isfile(model_path):
             raise IOError("Invalid file path: {}".format(model_path))
 
         root_path = os.path.dirname(model_path)
-        file_name = os.path.basename(model_path)
-        dotAt = file_name.index('.')
-        self.model_basename = file_name[:dotAt]
-        self.base_path = os.path.join(root_path, self.model_basename)
+        if not model_name:
+            file_name = os.path.basename(model_path)
+            dotAt = file_name.index('.')
+            model_name = file_name[:dotAt]
+        self.model_name = model_name
+        self.base_path = os.path.join(root_path, self.model_name)
         self.owd = os.getcwd()     # original working directory saved to return later
 
         if (model_path.endswith(".zip")):
@@ -192,8 +194,8 @@ class CellModel(sciunit.Model):
     def load_mod_files(self):
         os.chdir(self.base_path)
         libpath = "x86_64/.libs/libnrnmech.so.0"
-        if not os.path.isfile(os.path.join(self.base_path, libpath)):
-            os.system("nrnivmodl mechanisms")   # do nrnivmodl in mechanisms directory
+        #if not os.path.isfile(os.path.join(self.base_path, libpath)):
+        os.system("nrnivmodl mechanisms")   # do nrnivmodl in mechanisms directory
         if not os.path.isfile(os.path.join(self.base_path, libpath)):
             raise IOError("Error in compiling mod files!")
         h.nrn_load_dll(os.path.join(self.base_path, libpath))
