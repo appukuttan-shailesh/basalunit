@@ -44,7 +44,7 @@ class BU_ZScore(sciunit.Score):
                     o_std = observation[key_0][key_1][key_2][1]
                     p_value = prediction[key_0][key_1][key_2]
                     try:
-                        value = (p_value - o_mean)/o_std
+                        value = float(p_value - o_mean)/o_std
                     except ZeroDivisionError:
                         value = float("inf")
                     nested_set(score_dict, [key_0, key_1, key_2], value)
