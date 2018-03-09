@@ -45,7 +45,7 @@ class eFELfeaturesTest(sciunit.Test):
 
         # load JSON from the zip file contents
         with open(os.path.join(self.observation_dir, filename_without_ext+".json")) as data_file:
-            observation_data = json.load(data_file)
+            observation = json.load(data_file)
 
         cell_types = {"msn_d1":"YJ150915_c67D1ch01D2ch23-c6-protocols",
                       "msn_d2":"YJ150915_c67D1ch01D2ch23-c7-protocols"}
