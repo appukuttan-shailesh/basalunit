@@ -9,6 +9,9 @@ import os.path
 import copy
 from datetime import datetime
 import pickle
+import tarfile
+import zipfile
+import StringIO
 
 from basalunit.utils import CellEvaluator
 from basalunit.scores import BU_ZScore
@@ -19,13 +22,31 @@ class eFELfeaturesTest(sciunit.Test):
     score_type = BU_ZScore
 
     def __init__(self,
-                 observation={},
+                 observation=None,
                  name="Basal Ganglia - Somatic Features",
-                 observation_dir=None,
                  cell_type=None,
                  base_directory=None,
                  junction_potential=0,
                  use_cache=True):
+
+        # convert he observation data format into zip format
+        zipDoc = zipfile.ZipFile(StringIO.StringIO(observation))
+
+        # filename = name.replace(" ", "") + "_{}.zip".format(datetime.now().strftime("%Y-%m-%d"))
+        obs_base_dir = os.path.abspath("./temp")
+        if not os.path.exists(obs_base_dir):
+            os.makedirs(obs_base_dir)
+
+        resp = zipDoc.extractall(obs_base_dir)
+        filename_without_ext = zipDoc.namelist()[0][:-1] # remove trailing slash
+        zipDoc.close()
+
+        self.observation_dir = os.path.join(obs_base_dir, filename_without_ext)
+
+        # load JSON from the zip file contents
+        with open(os.path.join(self.observation_dir, filename_without_ext+".json")) as data_file:
+            observation_data = json.load(data_file)
+
         cell_types = {"msn_d1":"YJ150915_c67D1ch01D2ch23-c6-protocols",
                       "msn_d2":"YJ150915_c67D1ch01D2ch23-c7-protocols"}
         if not cell_type in cell_types.keys():
@@ -47,7 +68,6 @@ class eFELfeaturesTest(sciunit.Test):
         """
         sciunit.Test.__init__(self, observation, name)
         self.base_directory = base_directory
-        self.observation_dir = observation_dir
         self.junction_potential = junction_potential
         self.use_cache = use_cache
 
