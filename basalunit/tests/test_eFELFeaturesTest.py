@@ -82,12 +82,12 @@ class eFELfeaturesTest(sciunit.Test):
             dic[keys[-1]] = value
 
         self.model_name = model.model_name
-        self.model_instance_name = model.instance_name
+        self.model_version = model.version
         if not self.base_directory:
             self.base_directory = model.base_path
 
         # Create output directory
-        self.path_test_output = os.path.join(self.base_directory, 'validation_results', 'efel_feat', self.model_instance_name, datetime.now().strftime("%Y%m%d-%H%M%S"))
+        self.path_test_output = os.path.join(self.base_directory, 'validation_results', 'efel_feat', self.model_version, datetime.now().strftime("%Y%m%d-%H%M%S"))
         if not os.path.exists(self.path_test_output):
             os.makedirs(self.path_test_output)
 

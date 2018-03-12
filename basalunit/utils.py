@@ -53,9 +53,8 @@ class CellModel(sciunit.Model):
 
         root_path = os.path.dirname(model_path)
         if not model_name:
-            file_name = os.path.basename(model_path)
-            dotAt = file_name.index('.')
-            model_name = file_name[:dotAt]
+            file_name = os.path.basename(model_path)            
+            model_name = file_name.split(".")[0]
         self.model_name = model_name
         self.base_path = os.path.join(root_path, self.model_name)
         self.owd = os.getcwd()     # original working directory saved to return later
