@@ -26,11 +26,12 @@ class ErrorAbsolute:
         for key_0 in self.testObj.observation:
             for key_1 in self.testObj.observation[key_0]:
                 for key_2 in self.testObj.observation[key_0][key_1]:
-                    temp_obs = self.testObj.observation[key_0][key_1][key_2]
-                    prd_val = self.testObj.prediction[key_0][key_1][key_2]
-                    feat_name = "{}.{}.{}".format(key_0, key_1, key_2)
-                    entry = (feat_name, temp_obs[0], temp_obs[1], prd_val)
-                    data.append(entry)
+                    if "{}.{}.{}".format(key_0, key_1, key_2) not in self.testObj.prob_list:
+                        temp_obs = self.testObj.observation[key_0][key_1][key_2]
+                        prd_val = self.testObj.prediction[key_0][key_1][key_2]
+                        feat_name = "{}.{}.{}".format(key_0, key_1, key_2)
+                        entry = (feat_name, temp_obs[0], temp_obs[1], prd_val)
+                        data.append(entry)
 
         data = sorted(data)
         feat_names, obs_mean, obs_std, pred_val = map(list, zip(*data))

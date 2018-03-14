@@ -43,16 +43,20 @@ class BU_ZScore(sciunit.Score):
                     o_mean = observation[key_0][key_1][key_2][0]
                     o_std = observation[key_0][key_1][key_2][1]
                     p_value = prediction[key_0][key_1][key_2]
-                    try:
-                        value = float(p_value - o_mean)/o_std
-                    except ZeroDivisionError:
-                        value = float("inf")
-                    nested_set(score_dict, [key_0, key_1, key_2], value)
-                    if not np.isnan(value) and not np.isinf(value):
-                        mean_score += abs(value)
-                        ctr += 1
-                    else:
+                    if p_value is None:
+                        nested_set(score_dict, [key_0, key_1, key_2], None)
                         prob_list.append("{}.{}.{}".format(key_0, key_1, key_2))
+                    else:
+                        try:
+                            value = float(p_value - o_mean)/o_std
+                        except ZeroDivisionError:
+                            value = float("inf")
+                        nested_set(score_dict, [key_0, key_1, key_2], value)
+                        if not np.isnan(value) and not np.isinf(value):
+                            mean_score += abs(value)
+                            ctr += 1
+                        else:
+                            prob_list.append("{}.{}.{}".format(key_0, key_1, key_2))
         score_dict = dict(score_dict)
         score = mean_score/float(ctr)
         return score, score_dict, prob_list

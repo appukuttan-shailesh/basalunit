@@ -53,7 +53,7 @@ class CellModel(sciunit.Model):
 
         root_path = os.path.dirname(model_path)
         if not model_name:
-            file_name = os.path.basename(model_path)            
+            file_name = os.path.basename(model_path)
             model_name = file_name.split(".")[0]
         self.model_name = model_name
         self.base_path = os.path.join(root_path, self.model_name)
@@ -63,6 +63,8 @@ class CellModel(sciunit.Model):
             file_ref = zipfile.ZipFile(model_path, 'r')
         elif (model_path.endswith(".tar.gz")):
             file_ref = tarfile.open(model_path, "r:gz")
+        elif (model_path.endswith(".tar.bz2")):
+            file_ref = tarfile.open(model_path, "r:bz2")
         elif (model_path.endswith(".tar")):
             file_ref = tarfile.open(model_path, "r:")
         else:
@@ -70,7 +72,7 @@ class CellModel(sciunit.Model):
         file_ref.extractall(root_path)
         file_ref.close()
 
-        valid_cell_types = ["msn_d1", "msn_d2"]
+        valid_cell_types = ["msn_d1", "msn_d2", "fs"]
         if cell_type not in valid_cell_types:
             raise ValueError("cell_type has to be from: {}".format(valid_cell_types))
 

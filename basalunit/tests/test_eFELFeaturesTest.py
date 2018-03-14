@@ -48,7 +48,8 @@ class eFELfeaturesTest(sciunit.Test):
             observation = json.load(data_file)
 
         cell_types = {"msn_d1":"YJ150915_c67D1ch01D2ch23-c6-protocols",
-                      "msn_d2":"YJ150915_c67D1ch01D2ch23-c7-protocols"}
+                      "msn_d2":"YJ150915_c67D1ch01D2ch23-c7-protocols",
+                      "fs":"str-fs-161205_FS1-protocols"}
         if not cell_type in cell_types.keys():
             raise TypeError("Invalid cell_type for SomaticFeaturesTest!")
         stim_file = pkg_resources.resource_filename("basalunit", "tests/somafeat_stim/" + cell_types[cell_type] + ".json")

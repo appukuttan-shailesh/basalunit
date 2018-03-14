@@ -25,9 +25,10 @@ class ErrorRelative:
         for key_0 in self.testObj.score_dict:
             for key_1 in self.testObj.score_dict[key_0]:
                 for key_2 in self.testObj.score_dict[key_0][key_1]:
-                    feat_name = "{}.{}.{}".format(key_0, key_1, key_2)
-                    entry = (feat_name, self.testObj.score_dict[key_0][key_1][key_2])
-                    data.append(entry)
+                    if "{}.{}.{}".format(key_0, key_1, key_2) not in self.testObj.prob_list:
+                        feat_name = "{}.{}.{}".format(key_0, key_1, key_2)
+                        entry = (feat_name, self.testObj.score_dict[key_0][key_1][key_2])
+                        data.append(entry)
 
         data = sorted(data)
         feat_names, scores = map(list, zip(*data))
