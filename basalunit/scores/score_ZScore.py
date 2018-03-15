@@ -7,16 +7,12 @@ import numpy as np
 
 class BU_ZScore(sciunit.Score):
     """
-	Returns Z-score
-    (not using sciunit's Z-score currently owing to complex structure of
-    observation and prediction; could merge/change later on)
+	Returns Mean of Z-scores
     """
 
     _allowed_types = (float,)
 
-    _description = ('The difference between the means of the observation and '
-                    'prediction divided by the standard deviation of the '
-                    'observation')
+    _description = ('Returns mean of valid Z-scores')
 
     @classmethod
     def compute(cls, observation, prediction):
