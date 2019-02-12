@@ -83,7 +83,7 @@ class eFELfeaturesTest(sciunit.Test):
             dic[keys[-1]] = value
 
         self.model_name = model.model_name
-        self.model_version = model.version
+        self.model_version = model.model_version
         if not self.base_directory:
             self.base_directory = model.base_path
 
