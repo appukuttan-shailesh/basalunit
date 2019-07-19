@@ -199,7 +199,7 @@ class CellModel(sciunit.Model):
         os.system("nrnivmodl mechanisms")   # do nrnivmodl in mechanisms directory
         if not os.path.isfile(os.path.join(self.base_path, libpath)):
             raise IOError("Error in compiling mod files!")
-        h.nrn_load_dll(os.path.join(self.base_path, libpath))
+        h.nrn_load_dll(str(os.path.join(self.base_path, libpath)))
         os.chdir(self.owd)
 
 # ==============================================================================
