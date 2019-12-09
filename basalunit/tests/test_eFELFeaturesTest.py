@@ -54,7 +54,7 @@ class eFELfeaturesTest(sciunit.Test):
             raise TypeError("Invalid cell_type for SomaticFeaturesTest!")
         stim_file = pkg_resources.resource_filename("basalunit", "tests/somafeat_stim/" + cell_types[cell_type] + ".json")
         with open(stim_file, 'r') as f:
-			self.protocol_definitions = json.load(f)
+		    self.protocol_definitions = json.load(f)
 
         description = ("Tests somatic features under current injection of varying amplitudes.")
         #XXXXXXXXXXXXXXXXXXXXXself.required_capabilities = (cap.ProvidesDensityInfo,)
