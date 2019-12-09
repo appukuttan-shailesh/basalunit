@@ -11,7 +11,7 @@ from datetime import datetime
 import pickle
 import tarfile
 import zipfile
-import StringIO
+from io import StringIO
 
 from basalunit.utils import CellEvaluator
 from basalunit.scores import BU_ZScore
@@ -30,7 +30,7 @@ class eFELfeaturesTest(sciunit.Test):
 				 use_cache=True):
 
 		# convert he observation data format into zip format
-		zipDoc = zipfile.ZipFile(StringIO.StringIO(observation))
+		zipDoc = zipfile.ZipFile(StringIO(observation))
 
 		# filename = name.replace(" ", "") + "_{}.zip".format(datetime.now().strftime("%Y-%m-%d"))
 		obs_base_dir = os.path.abspath("./temp")
