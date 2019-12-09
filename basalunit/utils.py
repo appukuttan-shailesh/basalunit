@@ -102,7 +102,7 @@ class CellModel(sciunit.Model):
     def define_mechanisms(self, filename):
         mech_definitions = json.load(open(filename))
         mechanisms = []
-        for sectionlist, channels in mech_definitions.iteritems():
+        for sectionlist, channels in mech_definitions.items():
             seclist_loc = ephys.locations.NrnSeclistLocation(
                 sectionlist,
                 seclist_name=sectionlist)
@@ -232,7 +232,7 @@ class CellEvaluator(object):
             seclist_name='somatic',
             sec_index=0,
             comp_x=0.5)
-        for protocol_name, protocol_definition in protocol_definitions.iteritems():
+        for protocol_name, protocol_definition in protocol_definitions.items():
             # By default include somatic recording, could be any
             somav_recording = ephys.recordings.CompRecording(
                 name='%s.soma.v' %
@@ -274,9 +274,9 @@ class CellEvaluator(object):
     def define_fitness_calculator(self, protocols, features):
         feature_definitions = features
         objectives = []
-        for protocol_name, locations in feature_definitions.iteritems():
-            for location, features in locations.iteritems():
-                for efel_feature_name, meanstd in features.iteritems():
+        for protocol_name, locations in feature_definitions.items():
+            for location, features in locations.items():
+                for efel_feature_name, meanstd in features.items():
                     feature_name = '%s.%s.%s' % (
                         protocol_name, location, efel_feature_name)
                     recording_names = {'': '%s.%s.v' % (protocol_name, location)}
