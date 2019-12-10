@@ -115,7 +115,7 @@ class eFELfeaturesTest(sciunit.Test):
 				for key in self.observation.keys():
 					if (os.path.exists(os.path.join(cache_path, key+"_feats.json")))  and (os.path.exists(os.path.join(cache_path, key+"_trace.pkl"))):
 						print("\t"+key)
-						with open(os.path.join(cache_path, key+"_feats.json"), 'r') as f1, open(os.path.join(cache_path, key+"_trace.pkl"), 'r') as f2:
+						with open(os.path.join(cache_path, key+"_feats.json"), 'rb') as f1, open(os.path.join(cache_path, key+"_trace.pkl"), 'rb') as f2:
 							cached_features[key] = json.load(f1)
 							cached_traces[key+".soma.v"] = pickle.load(f2)
 						observations_new.pop(key)
