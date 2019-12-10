@@ -132,7 +132,7 @@ class eFELfeaturesTest(sciunit.Test):
 			for feature in objective.features:
 				# e.g. recording name = `APWaveform_548.soma.v`
 				# this is changed to {APWaveform_548: {soma: {efel_feature_name: feature_value} } }
-				feat_name_parts = feature.recording_names.values()[0].split('.')
+				feat_name_parts = list(feature.recording_names.values())[0].split('.')
 				nested_set(prediction, [feat_name_parts[0], feat_name_parts[1], feature.efel_feature_name], feature.calculate_feature(self.pred_traces))
 
 		if not os.path.exists(cache_path):
