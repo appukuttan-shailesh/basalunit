@@ -138,7 +138,7 @@ class eFELfeaturesTest(sciunit.Test):
 		if not os.path.exists(cache_path):
 			os.makedirs(cache_path)
 		for key in observations_new.keys():
-			with open(os.path.join(cache_path, key+"_feats.json"), 'wb') as f:
+			with open(os.path.join(cache_path, key+"_feats.json"), 'w') as f:
 				json.dump(prediction[key], f, indent=4, sort_keys=True)
 			with open(os.path.join(cache_path, key+"_trace.pkl"), 'wb') as f:
 				pickle.dump(self.pred_traces[key+".soma.v"], f)
