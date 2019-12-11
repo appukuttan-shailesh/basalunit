@@ -34,7 +34,7 @@ class ErrorAbsolute:
                         data.append(entry)
 
         data = sorted(data)
-        feat_names, obs_mean, obs_std, pred_val = map(list, zip(*data))
+        feat_names, obs_mean, obs_std, pred_val = list(map(list, zip(*data)))
         yinds = range(len(feat_names))
 
         MAX_FEATS_PER_PAGE = 50

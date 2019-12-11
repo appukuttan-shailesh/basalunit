@@ -31,9 +31,9 @@ class ErrorRelative:
                         data.append(entry)
 
         data = sorted(data)
-        feat_names, scores = map(list, zip(*data))
+        feat_names, scores = list(map(list, zip(*data)))
         yinds = range(len(feat_names))
-        scores = map(abs, scores)
+        scores = list(map(abs, scores))
 
         MAX_FEATS_PER_PAGE = 50
         total_pages = int(math.ceil(len(feat_names)/MAX_FEATS_PER_PAGE))
