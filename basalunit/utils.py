@@ -194,7 +194,7 @@ class CellModel(sciunit.Model):
 
     def load_mod_files(self):
         os.chdir(self.base_path)
-        libpath = "x86_64/.libs/libnrnmech.so.0"
+        libpath = "x86_64/.libs/libnrnmech.so"
         #if not os.path.isfile(os.path.join(self.base_path, libpath)):
         os.system("nrnivmodl mechanisms")   # do nrnivmodl in mechanisms directory
         if not os.path.isfile(os.path.join(self.base_path, libpath)):

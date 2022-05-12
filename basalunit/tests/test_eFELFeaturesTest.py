@@ -102,13 +102,12 @@ class eFELfeaturesTest(sciunit.Test):
 		observations_new = copy.deepcopy(self.observation)
 		protcols_new = copy.deepcopy(self.protocol_definitions)
 
-		model.model_hash = model.hash
-		cache_path = os.path.abspath(os.path.join(self.path_test_output, "../cache", model.model_hash))
+		cache_path = os.path.abspath(os.path.join(self.path_test_output, "../cache", model.model_uuid))
 		cached_traces = {}
 		cached_features = {}
 		if self.use_cache:
 			if not os.path.exists(os.path.join(cache_path)):
-				print("Note: no cached data for this model specification (hash)!")
+				print("Note: no cached data for this model specification (model_uuid)!")
 			else:
 				print("***** Using cache to retrieve relevant model data *****")
 				print("Cached data found for following protocols: ")
