@@ -14,6 +14,10 @@ class BU_ZScore(sciunit.Score):
 
     _description = ('Returns mean of valid Z-scores')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dont_hide = ["related_data"]
+
     @classmethod
     def compute(cls, observation, prediction):
         """
