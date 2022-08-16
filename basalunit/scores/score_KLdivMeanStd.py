@@ -1,4 +1,5 @@
 import sciunit
+from numpy import nan
 import math
 
 #==============================================================================
@@ -15,7 +16,7 @@ class KLdivMeanStd(sciunit.Score):
     https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence
     """
 
-    _allowed_types = (float,)
+    _allowed_types = (float, int, None,)
 
     _description = ('The divergence from the probability P_mod to the probability P_obs, being computed '
                     'as the expectation of the logarithmic difference between P_mod and P_obs, '
@@ -30,7 +31,15 @@ class KLdivMeanStd(sciunit.Score):
         """
         Computes a KLdiv-score from an observation and a prediction, both in form of mean, std.
         """
-        score = math.log(float(obs["std"])/float(pred["std"])) + (((float(pred["std"])**2) + ((float(pred["mean"])-float(obs["mean"]))**2))/(2*(float(obs["std"])**2))) - 0.5
+        if pred["mean"] == None:
+            # No prediction available from test
+            score = nan
+        elif pred["std"] == 0:
+            # use abs Z-score instead
+            score = abs((float(pred["mean"]) - float(obs["mean"])) / float(obs["std"]))
+        else:
+            # use KLdiv score
+            score = math.log(float(obs["std"])/float(pred["std"])) + (((float(pred["std"])**2) + ((float(pred["mean"])-float(obs["mean"]))**2))/(2*(float(obs["std"])**2))) - 0.5
         return KLdivMeanStd(score)
 
     @property

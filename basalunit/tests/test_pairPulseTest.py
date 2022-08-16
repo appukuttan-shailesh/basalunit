@@ -3,7 +3,7 @@ import os
 import json
 from sciunit import Test
 import basalunit.capabilities as cap
-from basalunit import scores
+from basalunit.scores import KLdivMeanStd
 from quantities import mV
 from quantities.quantity import Quantity
 try:
@@ -52,7 +52,7 @@ class PairPulseTest(Test):
 		self.figures = []
 		description = "Evaluates statistics of connections in the striatal microcircuitry and compares it to experimental data."
 
-	score_type = scores.KLdivMeanStd
+	score_type = KLdivMeanStd
 
 	def format_data(self, observation):
 		# target format:
@@ -98,15 +98,20 @@ class PairPulseTest(Test):
 		model_mean, model_std, trace_fig, hist_fig = pps.analyse(post_type=self.post_type)
 
 		prediction = {"mean": model_mean, "std": model_std}
-		self.figures.append(trace_fig)
-		self.figures.append(hist_fig)
+		if trace_fig:
+			self.figures.append(trace_fig)
+		if hist_fig:
+			self.figures.append(hist_fig)
 		return prediction
 
 	def compute_score(self, observation, prediction, verbose=False):
 		"""Implementation of sciunit.Test.score_prediction."""
 
 		# Evaluate the score
-		score = scores.KLdivMeanStd.compute(observation, prediction)
+		print(observation)
+		print(prediction)
+		score = KLdivMeanStd.compute(observation, prediction)
+		print(score)
 		return score
 
 	def bind_score(self, score, model, observation, prediction):
