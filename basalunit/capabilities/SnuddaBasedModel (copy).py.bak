@@ -19,29 +19,32 @@ class SnuddaBasedModel(Model, Capability):
     def __init__(self,
                  name="Snudda Based Model",
                  network_path=os.path.join(".", "networks"),
-                 struct_name=None,
-                 struct_def=None,
-                 struct_params={},
-                 mod_files_path=None,
+                 n_dSPN=120,
+                 n_iSPN=120,
+                 n_FS=20,
+                 n_LTS=0,
+                 n_ChIN=0,
+                 volume_type="slice",
+                 neuron_density=80500,
+                 side_len=200e-6,
+                 slice_depth=150e-6,
+                 mod_files_path="./Snudda/snudda/data/neurons/mechanisms",
                  random_seed=None,
                  ebrains_username=None):
 
         Model.__init__(self, name=name)
 
-        # based on snudda/init/init.py
-        struct_func = { 
-                        "Striatum": "define_striatum",
-                        "GPe": "define_GPe",
-                        "GPi": "define_GPi",
-                        "STN": "define_STN",
-                        "SNr": "define_SNr",
-                        "Cortex": "define_cortex",
-                        "Thalamus": "define_thalamus"
-                    }
-
         if ebrains_username != False:
             model_params = {
-                **struct_params,
+                "n_dSPN": n_dSPN,
+                "n_iSPN": n_iSPN,
+                "n_FS": n_FS,
+                "n_LTS": n_LTS,
+                "n_ChIN": n_ChIN,
+                "volume_type": volume_type,
+                "neuron_density": neuron_density,
+                "side_len": neuron_density,
+                "slice_depth": slice_depth,
                 "mod_files_path": mod_files_path,
                 "random_seed": random_seed
             }
@@ -56,15 +59,19 @@ class SnuddaBasedModel(Model, Capability):
             self.network_path = network_path
 
         config_name = os.path.join(self.network_path, "network-config.json")
-        cnc = SnuddaInit(network_path=network_path,
-                         struct_def=struct_def,
+        cnc = SnuddaInit(struct_def={},
                          config_file=config_name,
                          random_seed=random_seed)
-        
-        if not struct_def:
-            define_func = getattr(cnc, struct_func[struct_name])
-            define_func(**struct_params)
-            
+        cnc.define_striatum(num_dSPN=n_dSPN,
+                            num_iSPN=n_iSPN,
+                            num_FS=n_FS,
+                            num_LTS=n_LTS,
+                            num_ChIN=n_ChIN,
+                            volume_type=volume_type,
+                            side_len=side_len,
+                            slice_depth=slice_depth,
+                            neuron_density=neuron_density)
+
         dir_name = os.path.dirname(config_name)
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
@@ -78,7 +85,7 @@ class SnuddaBasedModel(Model, Capability):
 
         spr = SnuddaPrune(network_path=network_path)
         spr.prune()
-        # spr = None
+        spr = None
 
         self.compile_mod_files(mod_files_path)
 
