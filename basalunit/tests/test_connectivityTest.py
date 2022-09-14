@@ -5,7 +5,6 @@ from sciunit import Test
 import basalunit.capabilities as cap
 from basalunit.scores import KLdivMeanStd
 from quantities import mV
-from quantities.quantity import Quantity
 try:
 	from sciunit import ObservationError
 except:
@@ -35,7 +34,6 @@ class ConnectivityTest(Test):
 				 y_max=None,
 				 log_file=None):
 
-		# observation = self.format_data(observation)
 		if not name:
 			name = "ConnectivityTest: {} -> {}".format(pre_type, post_type)
 		Test.__init__(self, observation, name)
@@ -53,32 +51,50 @@ class ConnectivityTest(Test):
 
 	score_type = KLdivMeanStd
 
-	# def format_data(self, observation):
-	# 	# target format:
-	# 	# {"mean": X * mV, "std": Y * mV}
-	# 	for key, val in observation.items():
-	# 		if type(val) is Quantity:
-	# 			observation[key] = val
-	# 		elif type(val) is float or type(val) is int:
-	# 			observation[key] = val * mV
-	# 		else:
-	# 			quantity_parts = val.split(" ")
-	# 			number = float(quantity_parts[0])
-	# 			units = " ".join(quantity_parts[1:])
-	# 			observation[key] = Quantity(number, units)
-	# 	return observation
+	def format_data(self, observation):
+		# input observation format:
+		# keys: max_dist, num, total, value(=num/total)
+		# e.g.
+		# observation = [{"max_dist": 50e-6,  "num": 5.0, "total": 19.0, "value": 5.0/19.0},
+		# 							 {"max_dist": 100e-6, "num": 3.0, "total": 43.0, "value": 3.0/43.0}]
+		#
+		# required format:
+		# self.exp_max_dist = [50e-6, 100e-6]
+		# self.exp_data_detailed = [(5, 19), (3, 43)]
+		# self.exp_data = [5/19.0, 3/43.0]
+
+		self.exp_max_dist = []
+		self.exp_data = []
+		self.exp_data_detailed = []
+
+		for item in observation:
+			self.exp_max_dist.append(item["max_dist"])
+			if "num" in item.keys():
+				self.exp_data_detailed.append((item["num"], item["total"]))
+			if "value" in item.keys():
+				self.exp_data.append(item["value"])
+
+		if len(self.exp_max_dist) == 0:
+			self.exp_max_dist = None
+		if len(self.exp_data) == 0:
+				self.exp_data = None
+		if len(self.exp_data_detailed) == 0:
+				self.exp_data_detailed = None
 
 	def validate_observation(self, observation):
 		pass
-		# try:
-		# 	assert type(observation) is dict
-		# 	assert all(key in observation.keys()
-		# 			   for key in ["mean", "std"])
-		# 	for key, val in observation.items():
-		# 		assert type(val) is Quantity
-		# except Exception as e:
-		# 	raise ObservationError(("Observation must be of the form "
-		# 							"{'mean': X * mV, 'std': Y * mV}"))
+		try:
+			assert type(observation) is list
+			for item in observation:
+				assert type(item) is dict
+				assert "max_dist" in item.keys()
+				assert (
+								all(key in item.keys() for key in ["num", "total"])
+								or ("value" in item.keys())
+							)
+			self.format_data(observation)
+		except Exception as e:
+			raise ObservationError("Observation not in the required form!")
 
 	def generate_prediction(self, model, verbose=False):
 		"""Implementation of sciunit.Test.generate_prediction."""
@@ -87,13 +103,14 @@ class ConnectivityTest(Test):
 				model.network_path, "log", "connectivity.log")
 
 		hdf5_file = os.path.join(model.network_path, "network-synapses.hdf5")
-		sa = SnuddaAnalyse(hdf5_file=hdf5_file) 
-		model_probs, plot_fig = sa.plot_connection_probability(
-									pre_type=self.pre_type,
-									post_type=self.post_type,
-									dist_3d=self.dist_3d,
-									
-									)
+		sa = SnuddaAnalyse(hdf5_file=hdf5_file)
+		model_probs, plot_fig = sa.plot_connection_probability(pre_type=self.pre_type,
+																													 post_type=self.post_type,
+																													 exp_max_dist=self.exp_max_dist,
+																													 exp_data=self.exp_data,
+																													 exp_data_detailed=self.exp_data_detailed,
+																													 dist_3d=self.dist_3d,
+																													 y_max=self.y_max)
 
 		# prediction = {"mean": model_mean, "std": model_std}
 		prediction = model_probs
