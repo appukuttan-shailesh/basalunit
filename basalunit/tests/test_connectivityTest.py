@@ -3,7 +3,7 @@ import os
 import json
 from sciunit import Test
 import basalunit.capabilities as cap
-from basalunit.scores import KLdivMeanStd
+from basalunit.scores import AvgRelativeDifferenceScore_ConnProb
 from quantities import mV
 try:
 	from sciunit import ObservationError
@@ -49,7 +49,7 @@ class ConnectivityTest(Test):
 		self.figures = []
 		description = "Evaluates the connection probabilities and compares it to experimental data."
 
-	score_type = KLdivMeanStd
+	score_type = AvgRelativeDifferenceScore_ConnProb
 
 	def format_data(self, observation):
 		# input observation format:
@@ -73,6 +73,8 @@ class ConnectivityTest(Test):
 				self.exp_data_detailed.append((item["num"], item["total"]))
 			if "value" in item.keys():
 				self.exp_data.append(item["value"])
+			else:
+				self.exp_data.append(item["num"]/item["total"])
 
 		if len(self.exp_max_dist) == 0:
 			self.exp_max_dist = None
@@ -104,15 +106,13 @@ class ConnectivityTest(Test):
 
 		hdf5_file = os.path.join(model.network_path, "network-synapses.hdf5")
 		sa = SnuddaAnalyse(hdf5_file=hdf5_file)
-		model_probs, plot_fig = sa.plot_connection_probability(pre_type=self.pre_type,
-																													 post_type=self.post_type,
-																													 exp_max_dist=self.exp_max_dist,
-																													 exp_data=self.exp_data,
-																													 exp_data_detailed=self.exp_data_detailed,
-																													 dist_3d=self.dist_3d,
-																													 y_max=self.y_max)
-
-		# prediction = {"mean": model_mean, "std": model_std}
+		model_probs, plot_fig = sa.plot_connection_probability( pre_type=self.pre_type,
+																post_type=self.post_type,
+																exp_max_dist=self.exp_max_dist,
+																exp_data=self.exp_data,
+																exp_data_detailed=self.exp_data_detailed,
+																dist_3d=self.dist_3d,
+																y_max=self.y_max)
 		prediction = model_probs
 		if plot_fig:
 			self.figures.append(plot_fig)
@@ -124,8 +124,9 @@ class ConnectivityTest(Test):
 		# Evaluate the score
 		print(observation)
 		print(prediction)
-		score = KLdivMeanStd.compute(observation, prediction)
+		score, score_list = AvgRelativeDifferenceScore_ConnProb.compute(observation, prediction)
 		print(score)
+		print(score_list)
 		return score
 
 	def bind_score(self, score, model, observation, prediction):
