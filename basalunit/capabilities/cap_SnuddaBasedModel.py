@@ -41,6 +41,8 @@ class SnuddaBasedModel(Model, Capability):
 
         if ebrains_username != False:
             model_params = {
+                "struct_name" : struct_name,
+                **struct_def,
                 **struct_params,
                 "mod_files_path": mod_files_path,
                 "random_seed": random_seed

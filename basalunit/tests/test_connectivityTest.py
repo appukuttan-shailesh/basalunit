@@ -10,7 +10,7 @@ try:
 except:
 	from sciunit.errors import ObservationError
 from snudda.analyse.analyse import SnuddaAnalyse
-
+import contextlib
 
 class ConnectivityTest(Test):
 	"""
@@ -105,17 +105,21 @@ class ConnectivityTest(Test):
 				model.network_path, "log", "connectivity.log")
 
 		hdf5_file = os.path.join(model.network_path, "network-synapses.hdf5")
-		sa = SnuddaAnalyse(hdf5_file=hdf5_file)
-		model_probs, plot_fig = sa.plot_connection_probability( pre_type=self.pre_type,
-																post_type=self.post_type,
-																exp_max_dist=self.exp_max_dist,
-																exp_data=self.exp_data,
-																exp_data_detailed=self.exp_data_detailed,
-																dist_3d=self.dist_3d,
-																y_max=self.y_max)
+		with open(self.log_file, "w") as o:
+			with contextlib.redirect_stdout(o):
+				sa = SnuddaAnalyse(hdf5_file=hdf5_file)
+				model_probs, plot_fig = sa.plot_connection_probability( pre_type=self.pre_type,
+																		post_type=self.post_type,
+																		exp_max_dist=self.exp_max_dist,
+																		exp_data=self.exp_data,
+																		exp_data_detailed=self.exp_data_detailed,
+																		dist_3d=self.dist_3d,
+																		y_max=self.y_max)
 		prediction = model_probs
 		if plot_fig:
 			self.figures.append(plot_fig)
+		self.figures.append(self.log_file)
+		self.figures.append(hdf5_file)
 		return prediction
 
 	def compute_score(self, observation, prediction, verbose=False):

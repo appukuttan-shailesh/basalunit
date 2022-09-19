@@ -11,7 +11,7 @@ try:
 except:
 	from sciunit.errors import ObservationError
 from snudda.simulate.network_pair_pulse_simulation import SnuddaNetworkPairPulseSimulation
-
+import contextlib
 
 class PairPulseTest(Test):
 	"""
@@ -86,13 +86,15 @@ class PairPulseTest(Test):
 			self.log_file = os.path.join(
 				model.network_path, "log", "pair-pulse.log")
 
-		pps = SnuddaNetworkPairPulseSimulation(network_path=model.network_path,
-											   exp_type="Planert2010",
-											   pre_type=self.pre_type,
-											   post_type=self.post_type,
-											   max_dist=self.max_dist,
-											   hold_voltage=self.hold_v,
-											   current_injection=self.curr_inj)
+		with open(self.log_file, "w") as o:
+			with contextlib.redirect_stdout(o):
+				pps = SnuddaNetworkPairPulseSimulation(network_path=model.network_path,
+														exp_type="Planert2010",
+														pre_type=self.pre_type,
+														post_type=self.post_type,
+														max_dist=self.max_dist,
+														hold_voltage=self.hold_v,
+														current_injection=self.curr_inj)
 
 		pps.run_sim(gaba_rev=self.GABA_rev)
 		model_mean, model_std, trace_fig, hist_fig = pps.analyse(post_type=self.post_type)
@@ -102,6 +104,7 @@ class PairPulseTest(Test):
 			self.figures.append(trace_fig)
 		if hist_fig:
 			self.figures.append(hist_fig)
+		self.figures.append(self.log_file)			
 		return prediction
 
 	def compute_score(self, observation, prediction, verbose=False):
