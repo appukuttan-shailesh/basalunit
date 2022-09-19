@@ -119,7 +119,7 @@ class ConnectivityTest(Test):
 		if plot_fig:
 			self.figures.append(plot_fig)
 		self.figures.append(self.log_file)
-		self.figures.append(hdf5_file)
+		# self.figures.append(hdf5_file)
 		return prediction
 
 	def compute_score(self, observation, prediction, verbose=False):
