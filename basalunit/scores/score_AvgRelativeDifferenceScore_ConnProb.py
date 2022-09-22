@@ -1,6 +1,5 @@
 import math
 import sciunit.scores
-import quantities
 import numpy as np
 
 #==============================================================================

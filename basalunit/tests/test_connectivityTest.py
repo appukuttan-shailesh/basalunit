@@ -84,7 +84,6 @@ class ConnectivityTest(Test):
 				self.exp_data_detailed = None
 
 	def validate_observation(self, observation):
-		pass
 		try:
 			assert type(observation) is list
 			for item in observation:
