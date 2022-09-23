@@ -176,7 +176,7 @@ class NeuroModulationTest(Test):
 
 		nl.save(dir_path=network_path, name="dopamine_modulation.json")
 
-	def simulate(network_path):
+	def simulate(self, network_path):
 		# source: https://github.com/Hjorthmedh/Snudda/blob/synaptic_fitting2/examples/notebooks/validation/neuromodulation/neuromodulation_sim.py
 		with open(os.path.join(network_path, "dopamine_modulation.json"), "r") as neuromod_f:
 			neuromodulation_dict = json.load(neuromod_f, object_pairs_hook=OrderedDict)
@@ -211,8 +211,10 @@ class NeuroModulationTest(Test):
 		
 		sim.run(tSim)
 		sim.write_output()
+		
+		return "simulate() -> Success"
 
-	def simulate_control(network_path):
+	def simulate_control(self, network_path):
 		# source: https://github.com/Hjorthmedh/Snudda/blob/synaptic_fitting2/examples/notebooks/validation/neuromodulation/neuromodulation_sim.py
 		with open(os.path.join(network_path, "dopamine_modulation_control.json"), "r") as neuromod_f:
 			neuromodulation_dict = json.load(neuromod_f, object_pairs_hook=OrderedDict)
@@ -251,6 +253,8 @@ class NeuroModulationTest(Test):
 		sim.run(tSim)
 		sim.write_output()
 
+		return "simulate_control() -> Success"
+
 	def analyse(self, network_path):
 		# source: https://github.com/Hjorthmedh/Snudda/blob/synaptic_fitting2/examples/notebooks/validation/neuromodulation/neuromodulation_sim.py
 		validation = dict(dSPN=dict(mean=6,std=2.8),iSPN=dict(mean=-6,std=3))
@@ -274,18 +278,19 @@ class NeuroModulationTest(Test):
 			self.log_file = os.path.join(
 				model.network_path, "log", "connectivity.log")
 
-		# with open(self.log_file, "w") as o:
-			# with contextlib.redirect_stdout(o):
-		self.generate_current_injection(network_path=model.network_path)
-		self.create_modulation(network_path=model.network_path)
+		with open(self.log_file, "w") as o:
+			with contextlib.redirect_stdout(o):
+				self.generate_current_injection(network_path=model.network_path)
+				self.create_modulation(network_path=model.network_path)
 
-		pool = multiprocessing.Pool(multiprocessing.cpu_count())
-		# necessary to run both in isolation to avoid NEURON errors
-		task1 = pool.apply_async(self.simulate_control, args=(self, model.network_path,))
-		task2 = pool.apply_async(self.simulate, args=(self, model.network_path,))
-		[task.wait() for task in [task1, task2]]
-		# self.simulate_control(network_path=model.network_path)
-		# self.simulate(network_path=model.network_path)
+				pool = multiprocessing.Pool(multiprocessing.cpu_count())
+				# necessary to run both in isolation to avoid NEURON errors
+				task1 = pool.apply_async(self.simulate_control, args=(model.network_path,))
+				print(task1.get())
+				task2 = pool.apply_async(self.simulate, args=(model.network_path,))
+				print(task2.get())
+				pool.close()
+				pool.join()
 
 		f = h5py.File(os.path.join(model.network_path, "simulation", "test.hdf5"))
 		fc = h5py.File(os.path.join(model.network_path, "simulation", "test_control.hdf5"))
