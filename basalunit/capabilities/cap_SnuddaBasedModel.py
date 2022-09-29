@@ -22,9 +22,10 @@ class SnuddaBasedModel(Model, Capability):
                  struct_name={},
                  struct_def={},
                  struct_params={},
-                 mod_files_path=None,
+                 snudda_data=None,
                  random_seed=None,
-                 ebrains_username=None):
+                 ebrains_username=None,
+                 model_alias = None):
 
         Model.__init__(self, name=name)
 
@@ -44,10 +45,12 @@ class SnuddaBasedModel(Model, Capability):
                 "struct_name" : struct_name,
                 **struct_def,
                 **struct_params,
-                "mod_files_path": mod_files_path,
+                "snudda_data": snudda_data,
                 "random_seed": random_seed
             }
-            self.link_model_catalog(model_params, ebrains_username)
+            self.link_model_catalog(model_params, ebrains_username, model_alias)
+
+        self.snudda_data = snudda_data
 
         if os.path.isfile(network_path):
             self.network_file = network_path
@@ -82,10 +85,12 @@ class SnuddaBasedModel(Model, Capability):
         spr.prune()
         # spr = None
 
+        # compile the NMODL files
+        mod_files_path = os.path.join(snudda_data, "neurons", "mechanisms")
         self.compile_mod_files(mod_files_path)
 
-    def link_model_catalog(self, model_params, ebrains_username):
-        self.model_alias = "striatum_microcircuit"
+    def link_model_catalog(self, model_params, ebrains_username, model_alias):
+        self.model_alias = model_alias
         print("\nLink to model on model catalog: ")
         print("https://model-catalog.brainsimulation.eu/#model_alias." + self.model_alias)
 
