@@ -56,13 +56,13 @@ class SnuddaBasedModel(Model, Capability):
             self.network_file = network_path
             self.network_path = os.path.dirname(network_path)
         else:
-            self.network_file = os.path.join(
-                network_path, "network-synapses.hdf5")
+            self.network_file = os.path.join(network_path, "network-synapses.hdf5")
             self.network_path = network_path
 
         config_name = os.path.join(self.network_path, "network-config.json")
         cnc = SnuddaInit(network_path=network_path,
                          struct_def=struct_def,
+                         snudda_data=self.snudda_data,
                          config_file=config_name,
                          random_seed=random_seed)
         

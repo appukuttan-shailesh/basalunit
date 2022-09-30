@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from snudda.utils.load import SnuddaLoad
 from snudda.neuromodulation.modulation_network import Neuromodulation
 from snudda.neuromodulation.neuromodulation import SnuddaSimulateNeuromodulation
+from snudda.utils.snudda_path import snudda_parse_path
 
 from sciunit import Test
 import basalunit.capabilities as cap
@@ -66,14 +67,14 @@ class NeuroModulationTest(Test):
 			raise ObservationError(("Observation must be of the form "
 									"{'mean': X, 'std': Y}"))
 
-	def generate_current_injection(self, network_path):
+	def generate_current_injection(self, network_path, snudda_data):
 		# source: https://github.com/Hjorthmedh/Snudda/blob/synaptic_fitting2/examples/notebooks/validation/neuromodulation/neuromodulation_sim.py
-		self.sl = SnuddaLoad(os.path.join(network_path, "network-synapses.hdf5"))
+		self.sl = SnuddaLoad(os.path.join(network_path, "network-synapses.hdf5"), snudda_data=snudda_data)
 		tmp = dict()
 		for n in self.sl.data["neurons"]:
 			p = os.path.join(n["neuronPath"], "if_info.json")
 			import json
-			with open(p, "r") as f:
+			with open(snudda_parse_path(p, snudda_data), "r") as f:
 				pdata = json.load(f)
 			p = n['parameterKey']
 			m = n['morphologyKey']
@@ -280,7 +281,7 @@ class NeuroModulationTest(Test):
 
 		with open(self.log_file, "w") as o:
 			with contextlib.redirect_stdout(o):
-				self.generate_current_injection(network_path=model.network_path)
+				self.generate_current_injection(network_path=model.network_path, snudda_data=model.snudda_data)
 				self.create_modulation(network_path=model.network_path)
 
 				pool = multiprocessing.Pool(multiprocessing.cpu_count())
