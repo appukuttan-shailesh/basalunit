@@ -714,9 +714,6 @@ class CellModel_Lindroos2018(sciunit.Model):
         for axis in ['bottom','left']:
             ax.spines[axis].set_linewidth(4)
 
-
-        #plt.savefig('../../../Dropbox/manuscript/Frontiers/Figures/ca_bAP.png', transparent=True)
-
         f,a = plt.subplots(1,1, figsize=(2,4))
 
         path = os.path.dirname(files[0])
@@ -751,12 +748,6 @@ class CellModel_Lindroos2018(sciunit.Model):
 
         plt.show()
 
-# Distributions:
-'''
-T-type Ca: g = 1.0/( 1 +np.exp{(x-70)/-4.5} )
-naf (den): (0.1 + 0.9/(1 + np.exp((x-60.0)/10.0)))
-
-'''
 
 def calculate_distribution(d3, dist, a4, a5,  a6,  a7, g8):
     '''
@@ -772,6 +763,12 @@ def calculate_distribution(d3, dist, a4, a5,  a6,  a7, g8):
     dist = somatic distance of segment
     a4-7 = distribution parameters
     g8   = base conductance (similar to maximal conductance)
+
+    '''
+    # Distributions:
+    '''
+    T-type Ca: g = 1.0/( 1 +np.exp{(x-70)/-4.5} )
+    naf (den): (0.1 + 0.9/(1 + np.exp((x-60.0)/10.0)))
 
     '''
 
