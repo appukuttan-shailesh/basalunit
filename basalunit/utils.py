@@ -4,10 +4,12 @@
 # Modified by Alexander Kozlov <akozlov@kth.se>
 # Restructured and modified by Shailesh Appukuttan <shailesh.appukuttan@unic.cnrs-gif.fr>
 
+from __future__ import print_function, division
+
 import os
 import glob
 import json
-import bluepyopt.ephys as ephys
+# import bluepyopt.ephys as ephys
 import tarfile
 import zipfile
 import sciunit
@@ -15,7 +17,6 @@ import multiprocessing
 import functools
 from neuron import h
 
-from __future__ import print_function, division
 from joblib import Parallel, delayed
 import multiprocessing
 import numpy                as np
@@ -328,30 +329,21 @@ class CellEvaluator(object):
 #   plot_functions.py
 # Restructured and modified by Pedro Garcia-Rodriguez <pedro.garcia@cnrs.fr>
 
+h.load_file('stdlib.hoc')
+h.load_file('import3d.hoc')
+
 class CellModel_Lindroos2018(sciunit.Model):
 
-    h.load_file('stdlib.hoc')
-    h.load_file('import3d.hoc')
-
-    def save_vector(t, v, outfile):
-
-        with open(outfile, "w") as out:
-            for time, y in zip(t, v):
-                out.write("%g %g\n" % (time, y))
-
-    def main(   par="./params_dMSN.json",        \
+    def main(self, par="./params_dMSN.json",    \
                                 sim='vm',       \
                                 amp=0.265,      \
                                 run=None,       \
                                 simDur=1000,    \
                                 stimDur=900     ):
 
-
         # initiate cell
-        cell    =   build.MSN(  params=par,                             \
-                                morphology='WT-P270-20-14ak_1.03_SGA2-m12.swc' )
-                                # morphology='latest_WT-P270-20-14ak.swc' )
-
+        cell    =   MSN(  params=par,                             \
+                        morphology='latest_WT-P270-20-14ak.swc' )
 
         # set cascade--not activated in this script,
         # but used for setting pointers needed in the channel mechnisms
@@ -410,7 +402,6 @@ class CellModel_Lindroos2018(sciunit.Model):
                         h.setpointer(pointer, 'pka', seg.can )
 
 
-
         # configure simulation to record from both calcium pools.
         # the concentration is here summed, instead of averaged.
         # This doesn't matter for the validation fig, since relative concentration is reported.
@@ -467,7 +458,7 @@ class CellModel_Lindroos2018(sciunit.Model):
             print('saving', sim, 'simulation')
 
             # vm
-            save_vector(tm, vm, ''.join(['Results/Ca/vm_', sim, '_', str(int(amp*1e3)), '.out']) )
+            self.save_vector(tm, vm, ''.join(['Results/Ca/vm_', sim, '_', str(int(amp*1e3)), '.out']) )
 
             # ca
             for i,sec in enumerate(h.allsec()):
@@ -482,7 +473,7 @@ class CellModel_Lindroos2018(sciunit.Model):
                         v2Name      =   'cal_%s%s_%s' %  ( sName, str(i), str(j)  )
                         fName       =   'Results/Ca/ca_%s_%s.out'  %  ( str(int(np.round(h.distance(cell.soma(0.5), sec(seg.x))))), vName )
 
-                        cmd     = 'save_vector(tm, np.add(%s, %s), %s)' % (vName, v2Name, 'fName' ) # this is were concentrations are summed (see above)
+                        cmd     = 'self.save_vector(tm, np.add(%s, %s), %s)' % (vName, v2Name, 'fName' ) # this is were concentrations are summed (see above)
 
                         exec(cmd)
 
@@ -491,20 +482,27 @@ class CellModel_Lindroos2018(sciunit.Model):
             print('saving', sim, 'simulation', str(int(amp*1e3)))
 
             # vm
-            save_vector(tm, vm, ''.join(['Results/FI/vm_', sim, '_', str(int(amp*1e3)), '.out']) )
+            self.save_vector(tm, vm, ''.join(['Results/FI/vm_', sim, '_', str(int(amp*1e3)), '.out']) )
 
 
-    def dendrite_BAP():
+    def save_vector(self, t, v, outfile):
+
+        with open(outfile, "w") as out:
+            for time, y in zip(t, v):
+                out.write("%g %g\n" % (time, y))
+
+
+    def dendrite_BAP(self):
         # dendritic validation: change in [Ca] following a bAP (validated against Day et al., 2008)
         current = 2000
-        main( par="./params_dMSN.json",          \
+        self.main( par="./params_dMSN.json",    \
                     amp=current*1e-3,           \
                     simDur=200,                 \
                     stimDur=2,                  \
                     sim='ca'                    )
 
 
-    def somatic_excitability():
+    def somatic_excitability(self):
 
         print('starting somatic excitability simulation')
 
@@ -512,14 +510,16 @@ class CellModel_Lindroos2018(sciunit.Model):
         currents    = np.arange(-100,445,40)
         num_cores   = multiprocessing.cpu_count()
 
-        Parallel(n_jobs=num_cores, backend='multiprocessing')(delayed(main)(   par="./params_dMSN.json",   \
+        Parallel(n_jobs=num_cores, backend='multiprocessing')(delayed(self.main)(   \
+                                                    par="./params_dMSN.json",   \
                                                     amp=current*1e-3,           \
                                                     run=1,                      \
                                                     simDur=1000,                \
                                                     stimDur=900                 \
                                                 ) for current in currents)
         currents    = np.arange(320,445,40)
-        Parallel(n_jobs=num_cores, backend='multiprocessing')(delayed(main)(   par="./params_dMSN.json",   \
+        Parallel(n_jobs=num_cores, backend='multiprocessing')(delayed(self.main)(   \
+                                                    par="./params_dMSN.json",   \
                                                     amp=current*1e-3,           \
                                                     run=1,                      \
                                                     simDur=1000,                \
@@ -529,14 +529,19 @@ class CellModel_Lindroos2018(sciunit.Model):
         print('all simulations done!')
 
 
-    def plot_vm():
+    def load_obj(name ):
+        with open(name, 'rb') as f:
+            return pickle.load(f)
+
+
+    def plot_vm(self):
 
         '''
         Reproduces the base plots (validation: figure 2 B and C) for the frontiers paper.
 
         '''
 
-        files       = glob.glob('Results/FI/vm_vm_*')
+        files  = glob.glob('Results/FI/vm_vm_*')
 
         f1,a1  = plt.subplots(1,1)
         fig,ax = plt.subplots(1,1)
@@ -544,7 +549,7 @@ class CellModel_Lindroos2018(sciunit.Model):
         res = {}
 
         num_cores = multiprocessing.cpu_count() #int(np.ceil(multiprocessing.cpu_count() / 2))
-        M = Parallel(n_jobs=num_cores)(delayed(loadFile)( f ) for f in files)
+        M = Parallel(n_jobs=num_cores)(delayed(self.loadFile)( f ) for f in files)
 
         least_spikes = 100
         last_subThresh = 0
@@ -632,7 +637,7 @@ class CellModel_Lindroos2018(sciunit.Model):
             ax.spines[axis].set_linewidth(4)
 
 
-    def plot_Ca(fString):
+    def plot_Ca(self, fString='Results/Ca/ca*.out'):
 
         '''
         plots resulting Ca as distance dependent using all traces matching fString
@@ -651,7 +656,7 @@ class CellModel_Lindroos2018(sciunit.Model):
         distances = np.arange(0,200, 10)
 
         num_cores = multiprocessing.cpu_count() #int(np.ceil(multiprocessing.cpu_count() / 2))
-        M = Parallel(n_jobs=num_cores)(delayed(get_max)( f ) for f in files)
+        M = Parallel(n_jobs=num_cores)(delayed(self.get_max)( f ) for f in files)
         for m in M:
 
             for d in distances:
@@ -741,54 +746,86 @@ class CellModel_Lindroos2018(sciunit.Model):
 
         a.axis('off')
 
-    def plotting():
+    def plotting(self):
         # PLOTTING
-        plot_vm()
-        plot_Ca('Results/Ca/ca*.out')
+        self.plot_vm()
+        self.plot_Ca('Results/Ca/ca*.out')
 
         plt.show()
 
 
-def calculate_distribution(d3, dist, a4, a5,  a6,  a7, g8):
-    '''
-    Used for setting the maximal conductance of a segment.
-    Scales the maximal conductance based on somatic distance and distribution type.
+    def get_max(self, f):
 
-    Parameters:
-    d3   = distribution type:
-         0 linear,
-         1 sigmoidal,
-         2 exponential
-         3 step function
-    dist = somatic distance of segment
-    a4-7 = distribution parameters
-    g8   = base conductance (similar to maximal conductance)
+        x,y = np.loadtxt(f, unpack=True)
 
-    '''
-    # Distributions:
-    '''
-    T-type Ca: g = 1.0/( 1 +np.exp{(x-70)/-4.5} )
-    naf (den): (0.1 + 0.9/(1 + np.exp((x-60.0)/10.0)))
+        m   = max(y[3300:-1])
 
-    '''
+        path_file = os.path.split(f)
+        dist = int(path_file[1].split('_')[1])
 
-    if   d3 == 0:
-        value = a4 + a5*dist
-    elif d3 == 1:
-        value = a4 + a5/(1 + exp((dist-a6)/a7) )
-    elif d3 == 2:
-        value = a4 + a5*exp((dist-a6)/a7)
-    elif d3 == 3:
-        if (dist > a6) and (dist < a7):
-            value = a4
+        return [m, dist, x[3300:-1], y[3300:-1]]
+
+
+    def loadFile(self, f):
+
+        x,y = np.loadtxt(f, unpack=True)
+
+        amp = int(f.split('/')[-1].split('_')[2].split('.')[0])
+        #print (f, amp)
+
+        return [self.getSpikedata_x_y(x,y), amp, [x,y] ]
+
+
+    def getSpikedata_x_y(self, x,y):
+
+        '''
+        getSpikedata_x_y(x,y) -> return count
+
+        Extracts and returns the number of spikes from spike trace data.
+
+        # arguments
+        x = time vector
+        y = vm vector
+
+        # returns
+        count = number of spikes in trace (int)
+
+        # extraction algorithm
+        -threshold y and store list containing index for all points larger than 0 V
+        -sorts out and counts the index that are the first one(s) crossing the threshold, i.e.
+            the first index of each spike. This is done by looping over all index and check if
+            the index is equal to the previous index + 1. If not it is the first index of a
+            spike.
+
+            If no point is above threshold in the trace the function returns 0.
+
+        '''
+
+        count = 0
+        spikes = []
+
+        # pick out index for all points above zero potential for potential trace
+        spikeData = [i for i,v in enumerate(y) if v > 0]
+
+        # if no point above 0
+        if len(spikeData) == 0:
+
+            return spikes
+
         else:
-            value = a5
+            # pick first point of each individaul transient (spike)...
+            for j in range(0, len(spikeData)-1):
+                if j==0:
 
-    if value < 0:
-        value = 0
+                    count += 1
+                    spikes.append(x[spikeData[j]])
 
-    value = value*g8
-    return value
+                # ...by checking above stated criteria
+                elif not spikeData[j] == spikeData[j-1]+1:
+                    count += 1
+                    spikes.append(x[spikeData[j]])
+
+        return spikes
 
 # ======================= the MSN class ==================================================
 
@@ -936,6 +973,48 @@ class MSN:
             if sec.name().find(as1) >= 0:
                 for seg in sec:
                     dist = h.distance(seg.x, sec=sec) - 7.06 + 5.6
-                    val = calculate_distribution(d3, dist, a4, a5, a6, a7, g8)
+                    val = self.calculate_distribution(d3, dist, a4, a5, a6, a7, g8)
                     cmd = 'seg.%s = %g' % (as2, val)
                     exec(cmd)
+
+
+    def calculate_distribution(self, d3, dist, a4, a5,  a6,  a7, g8):
+        '''
+        Used for setting the maximal conductance of a segment.
+        Scales the maximal conductance based on somatic distance and distribution type.
+
+        Parameters:
+        d3   = distribution type:
+             0 linear,
+             1 sigmoidal,
+             2 exponential
+             3 step function
+        dist = somatic distance of segment
+        a4-7 = distribution parameters
+        g8   = base conductance (similar to maximal conductance)
+
+        '''
+        # Distributions:
+        '''
+        T-type Ca: g = 1.0/( 1 +np.exp{(x-70)/-4.5} )
+        naf (den): (0.1 + 0.9/(1 + np.exp((x-60.0)/10.0)))
+
+        '''
+
+        if   d3 == 0:
+            value = a4 + a5*dist
+        elif d3 == 1:
+            value = a4 + a5/(1 + exp((dist-a6)/a7) )
+        elif d3 == 2:
+            value = a4 + a5*exp((dist-a6)/a7)
+        elif d3 == 3:
+            if (dist > a6) and (dist < a7):
+                value = a4
+            else:
+                value = a5
+
+        if value < 0:
+            value = 0
+
+        value = value*g8
+        return value
