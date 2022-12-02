@@ -746,6 +746,7 @@ class CellModel_Lindroos2018(sciunit.Model):
 
         a.axis('off')
 
+
     def plotting(self):
         # PLOTTING
         self.plot_vm()
