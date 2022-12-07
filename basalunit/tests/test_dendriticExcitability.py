@@ -1,5 +1,6 @@
 import sciunit
-
+import json
+import os
 
 class DendriticExcitability(sciunit.test):
 
@@ -40,10 +41,12 @@ class DendriticExcitability(sciunit.test):
 
     def validate_observation(self, observation):
 
-    def raw_model_prediction(self, model):
-        return mod_prediction_all
 
     def generate_prediction(self, model, verbose=False):
+        self.model_name = model.name
+        model.dendrite_BAP()
+
+        prediction = model.get_Ca()
         return prediction
 
     def compute_score(self, observation, prediction, verbose=True):

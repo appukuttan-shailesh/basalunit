@@ -473,7 +473,7 @@ class CellModel_Lindroos2018(sciunit.Model):
                         v2Name      =   'cal_%s%s_%s' %  ( sName, str(i), str(j)  )
                         fName       =   'Results/Ca/ca_%s_%s.out'  %  ( str(int(np.round(h.distance(cell.soma(0.5), sec(seg.x))))), vName )
 
-                        cmd     = 'self.save_vector(tm, np.add(%s, %s), %s)' % (vName, v2Name, 'fName' ) # this is were concentrations are summed (see above)
+                        cmd = 'self.save_vector(tm, np.add(%s, %s), %s)' % (vName, v2Name, 'fName' ) # this is were concentrations are summed (see above)
 
                         exec(cmd)
 
@@ -636,6 +636,59 @@ class CellModel_Lindroos2018(sciunit.Model):
         for axis in ['bottom','left']:
             ax.spines[axis].set_linewidth(4)
 
+        plt.show()
+
+
+    def get_Ca(self, fString='Results/Ca/ca*.out'):
+
+        '''
+        gets resulting Ca as distance dependent using all traces matching fString
+        '''
+
+        files       = glob.glob(fString)
+
+        N           = len(files)
+
+        gradient    = [(1-1.0*x/(N-1), 0, 1.0*x/(N-1)) for x in range(N)]
+
+        res = {}
+
+        distances = np.arange(0,200, 10)
+
+        num_cores = multiprocessing.cpu_count() #int(np.ceil(multiprocessing.cpu_count() / 2))
+        M = Parallel(n_jobs=num_cores)(delayed(self.get_max)( f ) for f in files)
+        for m in M:
+
+            for d in distances:
+
+                if m[1] > d-5 and m[1] < d+5:
+
+                    if d not in res:
+
+                        res[d] = []
+
+                    res[d].append(m[0])
+                    break
+
+        mean_amp    = []
+        x           = []
+        for d in distances:
+
+            if d in res:
+                mean_amp.append( np.mean(res[d]) )
+                x.append(d)
+
+        mean_amp = np.divide(mean_amp, mean_amp[3])
+
+        return [np.array(x), mean_amp]
+
+
+    def get_obsevation(self):
+
+        [x1,y1] = np.loadtxt('Exp_data/bAP/bAP-DayEtAl2006-D1.csv', unpack=True)
+
+        return [x1,y1]
+
 
     def plot_Ca(self, fString='Results/Ca/ca*.out'):
 
@@ -684,7 +737,6 @@ class CellModel_Lindroos2018(sciunit.Model):
             if m[1] >= 40:
                 ax.plot(m[1], np.divide(m[0], mean_amp[3]), '.', ms=20, color='k', alpha=0.2)
 
-        #print (x)
         mean_amp = np.divide(mean_amp, mean_amp[3])
 
         #day et al 2008
@@ -745,13 +797,6 @@ class CellModel_Lindroos2018(sciunit.Model):
 
 
         a.axis('off')
-
-
-    def plotting(self):
-        # PLOTTING
-        self.plot_vm()
-        self.plot_Ca('Results/Ca/ca*.out')
-
         plt.show()
 
 
