@@ -334,6 +334,18 @@ h.load_file('import3d.hoc')
 
 class CellModel_Lindroos2018(sciunit.Model):
 
+    def save_vector(self, t, v, outfile):
+
+        with open(outfile, "w") as out:
+            for time, y in zip(t, v):
+                out.write("%g %g\n" % (time, y))
+
+
+    def load_obj(name ):
+        with open(name, 'rb') as f:
+            return pickle.load(f)
+
+
     def main(self, par="./params_dMSN.json",    \
                                 sim='vm',       \
                                 amp=0.265,      \
@@ -485,23 +497,6 @@ class CellModel_Lindroos2018(sciunit.Model):
             self.save_vector(tm, vm, ''.join(['Results/FI/vm_', sim, '_', str(int(amp*1e3)), '.out']) )
 
 
-    def save_vector(self, t, v, outfile):
-
-        with open(outfile, "w") as out:
-            for time, y in zip(t, v):
-                out.write("%g %g\n" % (time, y))
-
-
-    def dendrite_BAP(self):
-        # dendritic validation: change in [Ca] following a bAP (validated against Day et al., 2008)
-        current = 2000
-        self.main( par="./params_dMSN.json",    \
-                    amp=current*1e-3,           \
-                    simDur=200,                 \
-                    stimDur=2,                  \
-                    sim='ca'                    )
-
-
     def somatic_excitability(self):
 
         print('starting somatic excitability simulation')
@@ -527,11 +522,6 @@ class CellModel_Lindroos2018(sciunit.Model):
                                                 ) for current in currents)
 
         print('all simulations done!')
-
-
-    def load_obj(name ):
-        with open(name, 'rb') as f:
-            return pickle.load(f)
 
 
     def plot_vm(self):
@@ -588,7 +578,6 @@ class CellModel_Lindroos2018(sciunit.Model):
 
         # FI curve ---------------------------------------------------------------------------------------
 
-
         for i,f in enumerate(glob.glob('Exp_data/FI/Planert2013-D1-FI-trace*') ):
 
             [x_i,y_i] = np.loadtxt(f, unpack=True)
@@ -638,6 +627,15 @@ class CellModel_Lindroos2018(sciunit.Model):
 
         plt.show()
 
+    # dendritic validation: change in [Ca] following a bAP (validated against Day et al., 2008)
+    def dendrite_BAP(self):
+        # dendritic validation: change in [Ca] following a bAP (validated against Day et al., 2008)
+        current = 2000
+        self.main( par="./params_dMSN.json",    \
+                    amp=current*1e-3,           \
+                    simDur=200,                 \
+                    stimDur=2,                  \
+                    sim='ca'                    )
 
     def get_Ca(self, fString='Results/Ca/ca*.out'):
 
@@ -646,48 +644,28 @@ class CellModel_Lindroos2018(sciunit.Model):
         '''
 
         files       = glob.glob(fString)
-
         N           = len(files)
-
-        gradient    = [(1-1.0*x/(N-1), 0, 1.0*x/(N-1)) for x in range(N)]
-
         res = {}
-
         distances = np.arange(0,200, 10)
 
         num_cores = multiprocessing.cpu_count() #int(np.ceil(multiprocessing.cpu_count() / 2))
         M = Parallel(n_jobs=num_cores)(delayed(self.get_max)( f ) for f in files)
         for m in M:
-
             for d in distances:
-
                 if m[1] > d-5 and m[1] < d+5:
-
                     if d not in res:
-
                         res[d] = []
-
                     res[d].append(m[0])
                     break
 
         mean_amp    = []
         x           = []
         for d in distances:
-
             if d in res:
                 mean_amp.append( np.mean(res[d]) )
                 x.append(d)
 
-        mean_amp = np.divide(mean_amp, mean_amp[3])
-
         return [np.array(x), mean_amp]
-
-
-    def get_obsevation(self):
-
-        [x1,y1] = np.loadtxt('Exp_data/bAP/bAP-DayEtAl2006-D1.csv', unpack=True)
-
-        return [x1,y1]
 
 
     def plot_Ca(self, fString='Results/Ca/ca*.out'):
@@ -695,58 +673,24 @@ class CellModel_Lindroos2018(sciunit.Model):
         '''
         plots resulting Ca as distance dependent using all traces matching fString
         '''
+        files       = glob.glob(fString)
 
         fig, ax = plt.subplots(1,1, figsize=(6,8))
 
-        files       = glob.glob(fString)
+        [x, mean_amp] = self.get_Ca(fString)
 
-        N           = len(files)
-
-        gradient    = [(1-1.0*x/(N-1), 0, 1.0*x/(N-1)) for x in range(N)]
-
-        res = {}
-
-        distances = np.arange(0,200, 10)
-
-        num_cores = multiprocessing.cpu_count() #int(np.ceil(multiprocessing.cpu_count() / 2))
+        num_cores = multiprocessing.cpu_count()
         M = Parallel(n_jobs=num_cores)(delayed(self.get_max)( f ) for f in files)
-        for m in M:
-
-            for d in distances:
-
-                if m[1] > d-5 and m[1] < d+5:
-
-                    if d not in res:
-
-                        res[d] = []
-
-                    res[d].append(m[0])
-                    break
-
-        mean_amp    = []
-        spread      = []
-        x           = []
-        for d in distances:
-
-            if d in res:
-                mean_amp.append( np.mean(res[d]) )
-                spread.append(   np.std( res[d]) )
-                x.append(d)
-
         for m in M:
             if m[1] >= 40:
                 ax.plot(m[1], np.divide(m[0], mean_amp[3]), '.', ms=20, color='k', alpha=0.2)
 
         mean_amp = np.divide(mean_amp, mean_amp[3])
+        ax.plot(x[3:], mean_amp[3:], lw=6, color='k')
 
         #day et al 2008
         [x1,y1] = np.loadtxt('Exp_data/bAP/bAP-DayEtAl2006-D1.csv', unpack=True)
-
         ax.plot(x1, y1, 'brown', lw=6)
-
-        #plt.fill_between(x, np.subtract(mean_amp, spread), np.add(mean_amp, spread), color='r', alpha=0.5)
-        ax.plot(x[3:], mean_amp[3:], lw=6, color='k')
-
 
         # Hide the right and top spines
         ax.spines['right'].set_visible(False)
@@ -755,7 +699,6 @@ class CellModel_Lindroos2018(sciunit.Model):
         # Only show ticks on the left and bottom spines
         ax.yaxis.set_ticks_position('left')
         ax.xaxis.set_ticks_position('bottom')
-
 
         # set ticks
         yticks = [0,1]

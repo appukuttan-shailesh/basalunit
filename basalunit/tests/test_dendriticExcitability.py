@@ -1,6 +1,9 @@
 import sciunit
+import basalunit.capabilities as basalunit_cap
+import basalunit.scores as basalunit_scores
 import json
 import os
+
 
 class DendriticExcitability(sciunit.test):
 
@@ -9,11 +12,23 @@ class DendriticExcitability(sciunit.test):
     action potential (Day et al., 2008)"""
     # score_type = basalunit_scores.CombineZScores
 
-    def __init__(self, observation=None, name="DendriticExcitability_Test", base_directory=None):
+    def __init__(self, model_path=None, observation=None, name="DendriticExcitability_Test", base_directory=None):
 
         self.description = "Tests dendritic excitability as the local change in \
         calcium concentration following a backpropagating action potential"
-        # require_capabilities = (mph_cap.ProvidesMorphFeatureInfo,)
+        require_capabilities = (basalunit_cap.Provides_CaConcentration_Info,)
+
+        if not model_path:
+            raise ValueError("Please specify the path to the model files!")
+        if not os.path.isfile(model_path):
+            raise ValueError("Specified path to the model files is invalid!")
+        self.model_path = model_path
+
+        if not observation:
+            observation_path=os.path.join(self.model_path, 'Exp_data/bAP/bAP-DayEtAl2006-D1.csv')
+            self.observation = self.get_observation(obs_path=observation_path)
+        else:
+            self.observation = observation
 
         if not base_directory:
             base_directory = "."
@@ -21,36 +36,48 @@ class DendriticExcitability(sciunit.test):
         # create output directory
         if not os.path.exists(self.path_test_output):
             os.makedirs(self.path_test_output)
-
-        # Checks raw observation data compliance with NeuroM's nomenclature
-        self.check_observation(observation)
-        self.raw_observation = observation
-
-        json.dumps(observation, sort_keys=True, indent=3)
-
         self.figures = []
-        observation = self.format_data(observation)
         sciunit.Test.__init__(self, observation, name)
 
-    def format_data(self, data):
-        """
-        This accepts data input in the form:
-        ***** (observation) *****
-        """
-        return data
 
-    def validate_observation(self, observation):
+    def get_observation(self, obs_path):
+        if obs_path == None:
+            raise ValueError("Please specify the path to the observation file!")
+        if not os.path.isfile(obs_path):
+            raise ValueError("Specified path to the observation file is invalid!")
+
+        [x1,y1] = np.loadtxt(path_file, unpack=True)
+
+        return [x1,y1]
 
 
     def generate_prediction(self, model, verbose=False):
+        self.model = model
         self.model_name = model.name
         model.dendrite_BAP()
 
-        prediction = model.get_Ca()
-        return prediction
+        [dend_dist, Ca_mean_amp] = model.get_Ca()
+        Ca_mean_amp = np.divide(Ca_mean_amp, Ca_mean_amp[3])
+
+        return [dend_dist, Ca_mean_amp]
+
 
     def compute_score(self, observation, prediction, verbose=True):
+        """Implementation of sciunit.Test.score_prediction"""
+
+        self.observation = observation
+        self.prediction = prediction
+
+        # Computing the scores
+        self.score =
+        self.score.description = "A mean distance between two profiles"
+
+        # ---------------------- Saving relevant results ----------------------
+        fig_Ca_model_obs = self.model.plot_Ca()
+        self.figures.extend(fig_Ca_model_obs)
+
         return self.score
+
 
     def bind_score(self, score, model, observation, prediction):
         score.related_data["figures"] = self.figures
