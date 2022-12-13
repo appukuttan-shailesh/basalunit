@@ -11,7 +11,7 @@ class Provides_CaConcentration_Info(sciunit.Capability):
 
     def get_Ca(self):
         """
-        Must return a 2D-tupple with arrays containing information of the type:
-            ([soma_distance_array], [calcium_concentration_array])
+        Must return a 2D-list with two arrays containing information of the type:
+            [[soma_distance_array], [calcium_concentration_array]]
         """
         raise NotImplementedError()

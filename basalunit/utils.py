@@ -9,7 +9,7 @@ from __future__ import print_function, division
 import os
 import glob
 import json
-# import bluepyopt.ephys as ephys
+import bluepyopt.ephys as ephys
 import tarfile
 import zipfile
 import sciunit
@@ -741,6 +741,9 @@ class CellModel_Lindroos2018(sciunit.Model):
 
         a.axis('off')
         plt.show()
+
+        fig_path = os.path.join(path, 'Figures' )
+        plt.savefig(fig_path , dpi=600, )
 
 
     def get_max(self, f):

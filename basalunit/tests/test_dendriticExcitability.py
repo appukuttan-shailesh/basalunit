@@ -3,9 +3,10 @@ import basalunit.capabilities as basalunit_cap
 import basalunit.scores as basalunit_scores
 import json
 import os
+import numpy as np
 
 
-class DendriticExcitability(sciunit.test):
+class DendriticExcitability_Test(sciunit.Test):
 
     """Tests dendritic excitability as the local change in calcium concentration
     as a function of somatic distance following a backpropagating
@@ -19,12 +20,13 @@ class DendriticExcitability(sciunit.test):
         require_capabilities = (basalunit_cap.Provides_CaConcentration_Info,)
 
         if not model_path:
-            raise ValueError("Please specify the path to the model files!")
-        if not os.path.isfile(model_path):
-            raise ValueError("Specified path to the model files is invalid!")
+            raise ValueError("Please specify the path to the model directory!")
+        if not os.path.isdir(model_path):
+            raise ValueError("Specified path to the model directory is invalid!")
         self.model_path = model_path
 
         if not observation:
+            # Use the path to experimental data, inside Lindroos et al. (2018) model directory
             observation_path=os.path.join(self.model_path, 'Exp_data/bAP/bAP-DayEtAl2006-D1.csv')
             self.observation = self.get_observation(obs_path=observation_path)
         else:
@@ -37,7 +39,6 @@ class DendriticExcitability(sciunit.test):
         if not os.path.exists(self.path_test_output):
             os.makedirs(self.path_test_output)
         self.figures = []
-        sciunit.Test.__init__(self, observation, name)
 
 
     def get_observation(self, obs_path):
@@ -46,7 +47,7 @@ class DendriticExcitability(sciunit.test):
         if not os.path.isfile(obs_path):
             raise ValueError("Specified path to the observation file is invalid!")
 
-        [x1,y1] = np.loadtxt(path_file, unpack=True)
+        [x1,y1] = np.loadtxt(obs_path, unpack=True)
 
         return [x1,y1]
 
@@ -69,8 +70,8 @@ class DendriticExcitability(sciunit.test):
         self.prediction = prediction
 
         # Computing the scores
-        self.score =
-        self.score.description = "A mean distance between two profiles"
+        self.score = 1.0
+        # self.score.description = "A mean distance between two profiles"
 
         # ---------------------- Saving relevant results ----------------------
         fig_Ca_model_obs = self.model.plot_Ca()
