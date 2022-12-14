@@ -823,7 +823,7 @@ class CellModel_Lindroos2018(sciunit.Model):
 
 class MSN:
     def __init__(self,  params=None,                                \
-                        morphology='latest_WT-P270-20-14ak.swc'     ):
+                        morphology='WT-P270-20-14ak_1.03_SGA2-m12.swc'     ):
         Import = h.Import3d_SWC_read()
         Import.input(morphology)
         imprt = h.Import3d_GUI(Import, 0)
