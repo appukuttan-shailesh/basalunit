@@ -334,6 +334,17 @@ h.load_file('import3d.hoc')
 
 class CellModel_Lindroos2018(sciunit.Model):
 
+    def __init__(self, model_path=None):
+
+        if not model_path:
+            raise ValueError("Please specify the path to the model directory!")
+        if not os.path.isdir(model_path):
+            raise ValueError("Specified path to the model directory is invalid!")
+
+        self.model_path = model_path
+        self.params_file = os.join.path(self.model_path, "params_dMSN.json")
+
+
     def save_vector(self, t, v, outfile):
 
         with open(outfile, "w") as out:
@@ -345,8 +356,7 @@ class CellModel_Lindroos2018(sciunit.Model):
         with open(name, 'rb') as f:
             return pickle.load(f)
 
-
-    def main(self, par="./params_dMSN.json",    \
+    def main(self, par="params_dMSN.json",    \
                                 sim='vm',       \
                                 amp=0.265,      \
                                 run=None,       \
@@ -354,8 +364,8 @@ class CellModel_Lindroos2018(sciunit.Model):
                                 stimDur=900     ):
 
         # initiate cell
-        cell    =   MSN(  params=par,                             \
-                        morphology='latest_WT-P270-20-14ak.swc' )
+        morph_file = os.join.path(self.model_path, 'latest_WT-P270-20-14ak.swc')
+        cell    =   MSN( params=par, morphology=morph_file )
 
         # set cascade--not activated in this script,
         # but used for setting pointers needed in the channel mechnisms
@@ -470,7 +480,7 @@ class CellModel_Lindroos2018(sciunit.Model):
             print('saving', sim, 'simulation')
 
             # vm
-            self.save_vector(tm, vm, ''.join(['Results/Ca/vm_', sim, '_', str(int(amp*1e3)), '.out']) )
+            self.save_vector(tm, vm, ''.join([ self.model_path, 'Results/Ca/vm_', sim, '_', str(int(amp*1e3)), '.out']) )
 
             # ca
             for i,sec in enumerate(h.allsec()):
@@ -483,7 +493,7 @@ class CellModel_Lindroos2018(sciunit.Model):
                         sName       =   sec.name().split('[')[0]
                         vName       =   'ca_%s%s_%s'  %  ( sName, str(i), str(j)  )
                         v2Name      =   'cal_%s%s_%s' %  ( sName, str(i), str(j)  )
-                        fName       =   'Results/Ca/ca_%s_%s.out'  %  ( str(int(np.round(h.distance(cell.soma(0.5), sec(seg.x))))), vName )
+                        fName       =   '%/Results/Ca/ca_%s_%s.out'  %  ( self.model_path, str(int(np.round(h.distance(cell.soma(0.5), sec(seg.x))))), vName )
 
                         cmd = 'self.save_vector(tm, np.add(%s, %s), %s)' % (vName, v2Name, 'fName' ) # this is were concentrations are summed (see above)
 
@@ -494,7 +504,7 @@ class CellModel_Lindroos2018(sciunit.Model):
             print('saving', sim, 'simulation', str(int(amp*1e3)))
 
             # vm
-            self.save_vector(tm, vm, ''.join(['Results/FI/vm_', sim, '_', str(int(amp*1e3)), '.out']) )
+            self.save_vector(tm, vm, ''.join([self.model_path, 'Results/FI/vm_', sim, '_', str(int(amp*1e3)), '.out']) )
 
 
     def somatic_excitability(self):
@@ -506,7 +516,7 @@ class CellModel_Lindroos2018(sciunit.Model):
         num_cores   = multiprocessing.cpu_count()
 
         Parallel(n_jobs=num_cores, backend='multiprocessing')(delayed(self.main)(   \
-                                                    par="./params_dMSN.json",   \
+                                                    par=self.params_file,   \
                                                     amp=current*1e-3,           \
                                                     run=1,                      \
                                                     simDur=1000,                \
@@ -514,7 +524,7 @@ class CellModel_Lindroos2018(sciunit.Model):
                                                 ) for current in currents)
         currents    = np.arange(320,445,40)
         Parallel(n_jobs=num_cores, backend='multiprocessing')(delayed(self.main)(   \
-                                                    par="./params_dMSN.json",   \
+                                                    par=self.params_file,   \
                                                     amp=current*1e-3,           \
                                                     run=1,                      \
                                                     simDur=1000,                \
@@ -531,7 +541,7 @@ class CellModel_Lindroos2018(sciunit.Model):
 
         '''
 
-        files  = glob.glob('Results/FI/vm_vm_*')
+        files  = glob.glob(os.path.join(self.model_path, 'Results/FI/vm_vm_*'))
 
         f1,a1  = plt.subplots(1,1)
         fig,ax = plt.subplots(1,1)
@@ -577,8 +587,8 @@ class CellModel_Lindroos2018(sciunit.Model):
         a1.axis('off')
 
         # FI curve ---------------------------------------------------------------------------------------
-
-        for i,f in enumerate(glob.glob('Exp_data/FI/Planert2013-D1-FI-trace*') ):
+        exp_data_path = os.path.join(self.model_path, 'Exp_data/FI/Planert2013-D1-FI-trace*')
+        for i,f in enumerate(glob.glob(exp_data_path)):
 
             [x_i,y_i] = np.loadtxt(f, unpack=True)
 
@@ -631,7 +641,7 @@ class CellModel_Lindroos2018(sciunit.Model):
     def dendrite_BAP(self):
         # dendritic validation: change in [Ca] following a bAP (validated against Day et al., 2008)
         current = 2000
-        self.main( par="./params_dMSN.json",    \
+        self.main( par=self.params_file,    \
                     amp=current*1e-3,           \
                     simDur=200,                 \
                     stimDur=2,                  \
@@ -643,7 +653,8 @@ class CellModel_Lindroos2018(sciunit.Model):
         gets resulting Ca as distance dependent using all traces matching fString
         '''
 
-        files       = glob.glob(fString)
+        files_path = os.path.join(self.model_path, fString)
+        files       = glob.glob(files_path)
         N           = len(files)
         res = {}
         distances = np.arange(0,200, 10)
@@ -673,11 +684,13 @@ class CellModel_Lindroos2018(sciunit.Model):
         '''
         plots resulting Ca as distance dependent using all traces matching fString
         '''
-        files       = glob.glob(fString)
+        files_path = os.path.join(self.model_path, fString)
+
+        files       = glob.glob(files_path)
 
         fig, ax = plt.subplots(1,1, figsize=(6,8))
 
-        [x, mean_amp] = self.get_Ca(fString)
+        [x, mean_amp] = self.get_Ca(files_path)
 
         num_cores = multiprocessing.cpu_count()
         M = Parallel(n_jobs=num_cores)(delayed(self.get_max)( f ) for f in files)
@@ -689,7 +702,8 @@ class CellModel_Lindroos2018(sciunit.Model):
         ax.plot(x[3:], mean_amp[3:], lw=6, color='k')
 
         #day et al 2008
-        [x1,y1] = np.loadtxt('Exp_data/bAP/bAP-DayEtAl2006-D1.csv', unpack=True)
+        exp_data_file = os.path.join(self.model_path, 'Exp_data/bAP/bAP-DayEtAl2006-D1.csv')
+        [x1,y1] = np.loadtxt(exp_data_file, unpack=True)
         ax.plot(x1, y1, 'brown', lw=6)
 
         # Hide the right and top spines
