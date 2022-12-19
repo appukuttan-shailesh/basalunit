@@ -334,16 +334,20 @@ h.load_file('import3d.hoc')
 
 class CellModel_Lindroos2018(sciunit.Model):
 
-    def __init__(self, model_path=None):
+    def __init__(self, model_path=None, morph_file=None, params_file=None):
 
         if not model_path:
             raise ValueError("Please specify the path to the model directory!")
         if not os.path.isdir(model_path):
             raise ValueError("Specified path to the model directory is invalid!")
-
         self.model_path = model_path
-        self.params_file = os.path.join(self.model_path, "params_dMSN.json")
-        self.morph_file = os.path.join(self.model_path, 'latest_WT-P270-20-14ak.swc')
+
+        if not params_file:
+            params_file = "params_dMSN.json"
+            self.params_file = os.path.join(self.model_path, params_file)
+        if not morph_file:
+            morph_file = 'latest_WT-P270-20-14ak.swc'
+            self.morph_file = os.path.join(self.model_path, morph_file)
 
 
     def save_vector(self, t, v, outfile):
