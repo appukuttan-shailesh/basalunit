@@ -342,7 +342,8 @@ class CellModel_Lindroos2018(sciunit.Model):
             raise ValueError("Specified path to the model directory is invalid!")
 
         self.model_path = model_path
-        self.params_file = os.join.path(self.model_path, "params_dMSN.json")
+        self.params_file = os.path.join(self.model_path, "params_dMSN.json")
+        self.morph_file = os.path.join(self.model_path, 'latest_WT-P270-20-14ak.swc')
 
 
     def save_vector(self, t, v, outfile):
@@ -356,16 +357,16 @@ class CellModel_Lindroos2018(sciunit.Model):
         with open(name, 'rb') as f:
             return pickle.load(f)
 
-    def main(self, par="params_dMSN.json",    \
-                                sim='vm',       \
-                                amp=0.265,      \
-                                run=None,       \
-                                simDur=1000,    \
-                                stimDur=900     ):
+
+    def main(self,  sim='vm',       \
+                    amp=0.265,      \
+                    run=None,       \
+                    simDur=1000,    \
+                    stimDur=900     ):
 
         # initiate cell
-        morph_file = os.join.path(self.model_path, 'latest_WT-P270-20-14ak.swc')
-        cell    =   MSN( params=par, morphology=morph_file )
+        cell    =   MSN( model_path=self.model_path, params=self.params_file, \
+                        morphology=self.morph_file )
 
         # set cascade--not activated in this script,
         # but used for setting pointers needed in the channel mechnisms
@@ -480,7 +481,7 @@ class CellModel_Lindroos2018(sciunit.Model):
             print('saving', sim, 'simulation')
 
             # vm
-            self.save_vector(tm, vm, ''.join([ self.model_path, 'Results/Ca/vm_', sim, '_', str(int(amp*1e3)), '.out']) )
+            self.save_vector(tm, vm, ''.join([ self.model_path, '/Results/Ca/vm_', sim, '_', str(int(amp*1e3)), '.out']) )
 
             # ca
             for i,sec in enumerate(h.allsec()):
@@ -493,7 +494,7 @@ class CellModel_Lindroos2018(sciunit.Model):
                         sName       =   sec.name().split('[')[0]
                         vName       =   'ca_%s%s_%s'  %  ( sName, str(i), str(j)  )
                         v2Name      =   'cal_%s%s_%s' %  ( sName, str(i), str(j)  )
-                        fName       =   '%/Results/Ca/ca_%s_%s.out'  %  ( self.model_path, str(int(np.round(h.distance(cell.soma(0.5), sec(seg.x))))), vName )
+                        fName       =   '%s/Results/Ca/ca_%s_%s.out'  %  ( self.model_path, str(int(np.round(h.distance(cell.soma(0.5), sec(seg.x))))), vName )
 
                         cmd = 'self.save_vector(tm, np.add(%s, %s), %s)' % (vName, v2Name, 'fName' ) # this is were concentrations are summed (see above)
 
@@ -504,7 +505,7 @@ class CellModel_Lindroos2018(sciunit.Model):
             print('saving', sim, 'simulation', str(int(amp*1e3)))
 
             # vm
-            self.save_vector(tm, vm, ''.join([self.model_path, 'Results/FI/vm_', sim, '_', str(int(amp*1e3)), '.out']) )
+            self.save_vector(tm, vm, ''.join([self.model_path, '/Results/FI/vm_', sim, '_', str(int(amp*1e3)), '.out']) )
 
 
     def somatic_excitability(self):
@@ -516,7 +517,6 @@ class CellModel_Lindroos2018(sciunit.Model):
         num_cores   = multiprocessing.cpu_count()
 
         Parallel(n_jobs=num_cores, backend='multiprocessing')(delayed(self.main)(   \
-                                                    par=self.params_file,   \
                                                     amp=current*1e-3,           \
                                                     run=1,                      \
                                                     simDur=1000,                \
@@ -524,7 +524,6 @@ class CellModel_Lindroos2018(sciunit.Model):
                                                 ) for current in currents)
         currents    = np.arange(320,445,40)
         Parallel(n_jobs=num_cores, backend='multiprocessing')(delayed(self.main)(   \
-                                                    par=self.params_file,   \
                                                     amp=current*1e-3,           \
                                                     run=1,                      \
                                                     simDur=1000,                \
@@ -636,13 +635,14 @@ class CellModel_Lindroos2018(sciunit.Model):
             ax.spines[axis].set_linewidth(4)
 
         plt.show()
+        fig_path = os.path.join(self.model_path, 'Figures', 'FI_profiles.png' )
+        fig.savefig(fig_path)
 
     # dendritic validation: change in [Ca] following a bAP (validated against Day et al., 2008)
     def dendrite_BAP(self):
         # dendritic validation: change in [Ca] following a bAP (validated against Day et al., 2008)
         current = 2000
-        self.main( par=self.params_file,    \
-                    amp=current*1e-3,           \
+        self.main(  amp=current*1e-3,           \
                     simDur=200,                 \
                     stimDur=2,                  \
                     sim='ca'                    )
@@ -756,8 +756,8 @@ class CellModel_Lindroos2018(sciunit.Model):
         a.axis('off')
         plt.show()
 
-        fig_path = os.path.join(path, 'Figures' )
-        plt.savefig(fig_path , dpi=600, )
+        fig_path = os.path.join(self.model_path, 'Figures', 'Ca_BPA.png' )
+        fig.savefig(fig_path)
 
 
     def get_max(self, f):
@@ -836,8 +836,14 @@ class CellModel_Lindroos2018(sciunit.Model):
 # ======================= the MSN class ==================================================
 
 class MSN:
-    def __init__(self,  params=None,                                \
+    def __init__(self,  model_path=None, params=None,                                \
                         morphology='WT-P270-20-14ak_1.03_SGA2-m12.swc'     ):
+
+        if not model_path:
+            raise ValueError("Please specify the path to the model directory!")
+        if not os.path.isdir(model_path):
+            raise ValueError("Specified path to the model directory is invalid!")
+
         Import = h.Import3d_SWC_read()
         Import.input(morphology)
         imprt = h.Import3d_GUI(Import, 0)
@@ -849,6 +855,8 @@ class MSN:
         self._set_nsegs()
         self.v_init = -80
 
+        cwd = os.getcwd()
+        os.chdir(model_path)
         for sec in self.somalist:
             for mech in [
                     "naf",
@@ -892,6 +900,7 @@ class MSN:
                     "bk"
                 ]:
                 sec.insert(mech)
+        os.chdir(cwd)
 
         for sec in self.allseclist:
             sec.Ra = 150
