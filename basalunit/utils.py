@@ -344,7 +344,7 @@ class CellModel_Lindroos2018(sciunit.Model):
         try:
             h.nrn_load_dll(os.path.join(self.model_path, 'x86_64/.libs/libnrnmech.so'))
         except:
-            pass 
+            pass
 
         if not params_file:
             params_file = "params_dMSN.json"
@@ -766,6 +766,8 @@ class CellModel_Lindroos2018(sciunit.Model):
 
         fig_path = os.path.join(self.model_path, 'Figures', 'Ca_BPA.png' )
         fig.savefig(fig_path)
+
+        return fig_path
 
 
     def get_max(self, f):

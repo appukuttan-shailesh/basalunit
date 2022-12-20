@@ -80,6 +80,6 @@ class DendriticExcitability_Test(sciunit.Test):
         return self.score
 
 
-    def bind_score(self, score, model, observation, prediction):
-        score.related_data["figures"] = self.figures
-        return score
+    def bind_score(self):
+        self.score.related_data["figures"] = self.figures
+        return self.score
