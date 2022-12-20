@@ -341,6 +341,7 @@ class CellModel_Lindroos2018(sciunit.Model):
         if not os.path.isdir(model_path):
             raise ValueError("Specified path to the model directory is invalid!")
         self.model_path = model_path
+        h.nrn_load_dll(os.path.join(self.model_path, 'x86_64/.libs/libnrnmech.so'))
 
         if not params_file:
             params_file = "params_dMSN.json"
@@ -369,8 +370,6 @@ class CellModel_Lindroos2018(sciunit.Model):
                     stimDur=900     ):
 
         # initiate cell
-        cwd = os.getcwd()
-        h.nrn_load_dll(os.path.join(self.model_path, 'x86_64/.libs/libnrnmech.so'))
         cell    =   MSN( params=self.params_file, morphology=self.morph_file )
 
         # set cascade--not activated in this script,
