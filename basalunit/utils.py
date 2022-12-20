@@ -369,8 +369,9 @@ class CellModel_Lindroos2018(sciunit.Model):
                     stimDur=900     ):
 
         # initiate cell
-        cell    =   MSN( model_path=self.model_path, params=self.params_file, \
-                        morphology=self.morph_file )
+        cwd = os.getcwd()
+        h.nrn_load_dll(os.path.join(self.model_path, 'x86_64/.libs/libnrnmech.so'))
+        cell    =   MSN( params=self.params_file, morphology=self.morph_file )
 
         # set cascade--not activated in this script,
         # but used for setting pointers needed in the channel mechnisms
@@ -642,7 +643,7 @@ class CellModel_Lindroos2018(sciunit.Model):
         fig_path = os.path.join(self.model_path, 'Figures', 'FI_profiles.png' )
         fig.savefig(fig_path)
 
-    # dendritic validation: change in [Ca] following a bAP (validated against Day et al., 2008)
+
     def dendrite_BAP(self):
         # dendritic validation: change in [Ca] following a bAP (validated against Day et al., 2008)
         current = 2000
@@ -650,6 +651,7 @@ class CellModel_Lindroos2018(sciunit.Model):
                     simDur=200,                 \
                     stimDur=2,                  \
                     sim='ca'                    )
+
 
     def get_Ca(self, fString='Results/Ca/ca*.out'):
 
@@ -840,13 +842,8 @@ class CellModel_Lindroos2018(sciunit.Model):
 # ======================= the MSN class ==================================================
 
 class MSN:
-    def __init__(self,  model_path=None, params=None,                                \
-                        morphology='WT-P270-20-14ak_1.03_SGA2-m12.swc'     ):
-
-        if not model_path:
-            raise ValueError("Please specify the path to the model directory!")
-        if not os.path.isdir(model_path):
-            raise ValueError("Specified path to the model directory is invalid!")
+    def __init__(self,  params=None, \
+                        morphology='WT-P270-20-14ak_1.03_SGA2-m12.swc'):
 
         Import = h.Import3d_SWC_read()
         Import.input(morphology)
@@ -859,8 +856,6 @@ class MSN:
         self._set_nsegs()
         self.v_init = -80
 
-        cwd = os.getcwd()
-        os.chdir(model_path)
         for sec in self.somalist:
             for mech in [
                     "naf",
@@ -904,7 +899,6 @@ class MSN:
                     "bk"
                 ]:
                 sec.insert(mech)
-        os.chdir(cwd)
 
         for sec in self.allseclist:
             sec.Ra = 150

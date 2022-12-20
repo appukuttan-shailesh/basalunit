@@ -33,7 +33,7 @@ class DendriticExcitability_Test(sciunit.Test):
             self.observation = observation
 
         if not base_directory:
-            base_directory = "."
+            base_directory = "./validation_results"
         self.path_test_output = base_directory
         # create output directory
         if not os.path.exists(self.path_test_output):
