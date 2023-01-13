@@ -764,10 +764,10 @@ class CellModel_Lindroos2018(sciunit.Model):
         a.axis('off')
         plt.show()
 
-        fig_path = [os.path.join(self.model_path, 'Figures', 'Ca_BPA.png' )]
+        fig_path = os.path.join(self.model_path, 'Figures', 'Ca_BPA.png' )
         fig.savefig(fig_path)
-        
-        return fig_path
+
+        return [fig_path]
 
 
     def get_max(self, f):
