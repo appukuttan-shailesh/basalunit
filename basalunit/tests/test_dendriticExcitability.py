@@ -65,7 +65,7 @@ class DendriticExcitability_Test(sciunit.Test):
 
         Returns the transpose of the 2D-data input, after discarding NaN values
         """
-        data_vals = [ coord_v[~numpy.isnan(coord_v)] for coord_v in data]
+        data_vals = [ coord_v[~np.isnan(coord_v)] for coord_v in data]
 
         return np.transpose(data_vals)
 
