@@ -645,6 +645,8 @@ class CellModel_Lindroos2018(sciunit.Model):
         fig_path = os.path.join(self.model_path, 'Figures', 'FI_profiles.png' )
         fig.savefig(fig_path)
 
+        return [fig_path]
+
 
     def dendrite_BAP(self):
         # dendritic validation: change in [Ca] following a bAP (validated against Day et al., 2008)

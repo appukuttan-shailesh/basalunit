@@ -30,5 +30,5 @@ setup(
     license='MIT',
     description='A SciUnit library for data-driven testing of basal ganglia models.',
     long_description="",
-    install_requires=['neo','elephant','sciunit>=0.2.7', 'tabulate']
+    install_requires=['neo','elephant','sciunit>=0.2.7', 'tabulate', 'similaritymeasures']
 )
