@@ -94,7 +94,7 @@ class DendriticExcitability_Test(sciunit.Test):
         fig_Ca_model_obs = self.model.plot_Ca()
         self.figures.extend(fig_Ca_model_obs)
 
-        return basalunit_scores.FrechetDistanceScore(self.score)
+        return self.score
 
 
     def bind_score(self):
