@@ -29,4 +29,4 @@ class FrechetDistanceScore(sciunit.Score):
         return self.score
 
     def __str__(self):
-        return 'Dicrete Frechet Distance score = %.5f' % self.score
+        return 'Discrete Frechet Distance score = %.5f' % self.score

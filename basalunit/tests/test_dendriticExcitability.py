@@ -1,22 +1,17 @@
 import sciunit
 import basalunit.capabilities as basalunit_cap
 import basalunit.scores as basalunit_scores
+import basalunit.plots as basalunit_plots
 import json
 import os
 import numpy as np
 
-score_str = 'FrechetDistanceScore'
-"""
-A Discrete Frechet distance, as implemented in the Python package 'similaritymeasures'
-A float giving the value of a discrete Frechet distance between two 2D-curves:
-one from the experiment and one from the model simulation.
-"""
 class DendriticExcitability_Test(sciunit.Test):
 
     """Tests dendritic excitability as the local change in calcium concentration
     as a function of somatic distance following a backpropagating
     action potential (Day et al., 2008)"""
-    score_type = eval('basalunit_scores.' + score_str)
+    score_type = basalunit_scores.CombineScores
 
     def __init__(self, model_path=None, observation=None, name="DendriticExcitability_Test", base_directory=None):
 
@@ -87,10 +82,50 @@ class DendriticExcitability_Test(sciunit.Test):
     def compute_score(self, observation, prediction, verbose=True):
         """Implementation of sciunit.Test.score_prediction"""
 
-        # Computing the score
-        self.score = getattr(basalunit_scores, score_str).compute(observation, prediction)
+        scores_dict = dict()
+        # quantify the difference between the two curves using Partial Curve Mapping
+        scores_dict['Partial Curve Mapping'] = \
+            basalunit_scores.PartialCurveMappingScore.compute(observation, prediction).score
 
-        # ---------------------- Saving relevant results ----------------------
+        # quantify the difference between the two curves using
+        # Discrete Frechet distance
+        scores_dict['Discrete Frechet distance'] = \
+            basalunit_scores.FrechetDistanceScore.compute(observation, prediction).score
+
+        # quantify the difference between the two curves using
+        # area between two curves
+        scores_dict['Area in between'] = \
+            basalunit_scores.AreaInBetweenScore.compute(observation, prediction).score
+
+        # quantify the difference between the two curves using
+        # Curve Length based similarity measure
+        scores_dict['Curve Length'] = \
+            basalunit_scores.CurveLengthScore.compute(observation, prediction).score
+
+        # quantify the difference between the two curves using
+        # Dynamic Time Warping distance
+        scores_dict['Dynamic Time Warping'] = \
+            basalunit_scores.DynamicTimeWarpingScore.compute(observation, prediction).score
+
+        self.scores_dict = scores_dict
+
+        # Computing the score
+        # Taking the average of the similarity measures, as the overall score for the Test
+        mean_score = np.mean(list(self.scores_dict.values()))
+        self.score = basalunit_scores.CombineScores(mean_score)
+        self.score.description = "A mean similarity measure between two curves"
+
+        # Saving figure with with scores in the form of bar-plot
+        score_label = 'Curves similarity measures'
+        xlabel = '|Score value|'
+        fig_title = 'Ca_BPA'
+        plt_title = "Calcium concentration, following a backpropagating AP: \n Model vs Experiment"
+        barplot_figure = basalunit_plots.ScoresBars(testObj=self, score_label=score_label, xlabel=xlabel,
+                                                    fig_title=fig_title, plt_title=plt_title)
+        barplot_files = barplot_figure.create()
+        self.figures.extend(barplot_files)
+
+        # ---------------------- Saving other relevant results ----------------------
         fig_Ca_model_obs = self.model.plot_Ca()
         self.figures.extend(fig_Ca_model_obs)
 
