@@ -45,7 +45,7 @@ class ScoresBars:
         # axis_obj.set_xlabel(xlabel, fontsize=x_fontsize)
         axis_obj.set_yticklabels(axis_obj.get_yticklabels(), fontsize=y_fontsize)
         # axis_obj.set_xticklabels(axis_obj.get_xticklabels(), fontsize=x_fontsize)
-        axis_obj.axes.set_title(title, fontsize=7)
+        axis_obj.axes.set_title(title, fontsize=11)
 
         # sns.despine()
 
@@ -66,6 +66,6 @@ class ScoresBars:
         plt.close('all')
         self.score_barplot(filepath=filepath_scores_float, scores_floats=scores_dict,
                             score_label=self.score_label, ylabel=self.score_label, xlabel=self.xlabel,
-                            x_fontsize=7, y_fontsize=6, title=self.plt_title)
+                            x_fontsize=6, y_fontsize=6, title=self.plt_title)
 
         return self.filepath_list

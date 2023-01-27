@@ -28,10 +28,10 @@ class DendriticExcitability_Test(sciunit.Test):
         if not observation:
             # Use the path to experimental data, inside Lindroos et al. (2018) model directory
             observation_path=os.path.join(self.model_path, 'Exp_data/bAP/bAP-DayEtAl2006-D1.csv')
-            raw_observation = self.get_observation(obs_path=observation_path)
+            dict_observation = self.get_observation(obs_path=observation_path)
         else:
-            raw_observation = observation
-        self.observation = self.format_data(raw_observation)
+            raw_observation = dict_observation
+        self.observation = dict_observation
 
         if not base_directory:
             base_directory = "./validation_results"
@@ -50,7 +50,7 @@ class DendriticExcitability_Test(sciunit.Test):
 
         [x1,y1] = np.loadtxt(obs_path, unpack=True)
 
-        return [x1,y1]
+        return { "Normalized Ca amplitude": x1, "Somatic distance (µm)": y1 }
 
 
     def format_data(self, data):
@@ -82,6 +82,9 @@ class DendriticExcitability_Test(sciunit.Test):
     def compute_score(self, observation, prediction, verbose=True):
         """Implementation of sciunit.Test.score_prediction"""
 
+        raw_observation = list(observation.values())
+        observation = self.format_data(raw_observation)
+
         scores_dict = dict()
         # quantify the difference between the two curves using Partial Curve Mapping
         scores_dict['Partial Curve Mapping'] = \
@@ -111,15 +114,15 @@ class DendriticExcitability_Test(sciunit.Test):
 
         # Computing the score
         # Taking the average of the similarity measures, as the overall score for the Test
-        mean_score = np.mean(list(self.scores_dict.values()))
-        self.score = basalunit_scores.CombineScores(mean_score)
-        self.score.description = "A mean similarity measure between two curves"
+        scores_list = list(self.scores_dict.values())
+        self.score = basalunit_scores.CombineScores.compute(scores_list)
+        self.score.description = "A mean value of similarity measure between two curves"
 
         # Saving figure with with scores in the form of bar-plot
         score_label = 'Curves similarity measures'
         xlabel = '|Score value|'
         fig_title = 'Ca_BPA'
-        plt_title = "Calcium concentration, following a backpropagating AP: \n Model vs Experiment"
+        plt_title = r"$\Delta$Ca concentration, following a backpropagating AP:" + "\n Model vs Experiment"
         barplot_figure = basalunit_plots.ScoresBars(testObj=self, score_label=score_label, xlabel=xlabel,
                                                     fig_title=fig_title, plt_title=plt_title)
         barplot_files = barplot_figure.create()

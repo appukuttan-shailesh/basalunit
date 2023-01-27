@@ -686,7 +686,7 @@ class CellModel_Lindroos2018(sciunit.Model):
                 mean_amp.append( np.mean(res[d]) )
                 x.append(d)
 
-        return [np.array(x), mean_amp]
+        return [ np.array(x), mean_amp ]
 
 
     def plot_Ca(self, fString='Results/Ca/ca*.out'):
@@ -727,13 +727,16 @@ class CellModel_Lindroos2018(sciunit.Model):
         # set ticks
         yticks = [0,1]
         ax.set_yticks(yticks)
-        ax.set_yticklabels(yticks, fontsize=35)
+        ax.set_yticklabels(yticks, fontsize=20)
         xticks = [40, 120, 200]
         ax.set_xticks(xticks)
-        ax.set_xticklabels(xticks, fontsize=35)
+        ax.set_xticklabels(xticks, fontsize=20)
 
         ax.tick_params(width=2, length=4)
 
+        ax.set_ylabel('Normalized Ca amplitude', fontsize=25)
+        ax.set_xlabel('Somatic distance (µm)', fontsize=25)
+        ax.set_title(r'$\Delta$Ca concentration' + '\n following a bAP', fontsize=30)
         # size of frame
         for axis in ['bottom','left']:
             ax.spines[axis].set_linewidth(4)
@@ -761,7 +764,6 @@ class CellModel_Lindroos2018(sciunit.Model):
 
         a.set_ylim([base-1, 50])
         a.set_xlim([95, 120])
-
 
         a.axis('off')
         plt.show()

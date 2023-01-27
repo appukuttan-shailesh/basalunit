@@ -29,4 +29,4 @@ class AreaInBetweenScore(sciunit.Score):
         return self.score
 
     def __str__(self):
-        return 'Area in between two profiles score = %.5f' % self.score
+        return 'Area in between two profiles Score = %.5f' % self.score
