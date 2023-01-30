@@ -1,6 +1,5 @@
 # basalunit
-A SciUnit library for data-driven testing of basal ganglia models. Some scores are included to measure similarity between 2D curves from experiment and models, based on the Python package similaritymeasures:
-https://pypi.org/project/similaritymeasures/
+A SciUnit library for data-driven testing of basal ganglia models. Some scores are included to measure similarity between 2D curves, with data from experiment and models. Those scores are based on the Python package similaritymeasures: https://pypi.org/project/similaritymeasures/
 
 Jekel, C. F., Venter, G., Venter, M. P., Stander, N., & Haftka, R. T. (2018). Similarity measures for identifying material parameters from hysteresis loops using inverse analysis. International Journal of Material Forming. https://doi.org/10.1007/s12289-018-1421-8
 
