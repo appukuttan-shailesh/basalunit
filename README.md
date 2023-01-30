@@ -10,5 +10,5 @@ This open source software code was developed in part or in whole in the Human Br
 
 <div>
   <img src="https://github.com/pedroernesto/basalunit/blob/master/Ca_BPA.png" alt="Example1" width="40%">
-  <img src="https://github.com/pedroernesto/basalunit/blob/master/score_barPlots_Ca_BPA.pdf" alt="Example2" width="50%">
+  <img src="https://github.com/pedroernesto/basalunit/blob/master/score_barPlots_Ca_BPA.png" alt="Example2" width="50%">
 </div>
