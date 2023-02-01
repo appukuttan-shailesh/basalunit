@@ -8,7 +8,7 @@ Jekel, C. F., Venter, G., Venter, M. P., Stander, N., & Haftka, R. T. (2018). Si
 ### ACKNOWLEDGEMENTS
 This open source software code was developed in part or in whole in the Human Brain Project, funded from the European Union's Horizon 2020 Framework Programme for Research and Innovation under Specific Grant Agreements No. 720270 and No. 785907 (Human Brain Project SGA1 and SGA2).
 
-<div>
+<div align="center">
   <img src="https://github.com/pedroernesto/basalunit/blob/master/Ca_BPA.png" alt="Example1" width="28%">
   <img src="https://github.com/pedroernesto/basalunit/blob/master/score_barPlots_Ca_BPA.png" alt="Example2" width="69%">
 </div>
