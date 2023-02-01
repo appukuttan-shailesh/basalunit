@@ -66,6 +66,6 @@ class ScoresBars:
         plt.close('all')
         self.score_barplot(filepath=filepath_scores_float, scores_floats=scores_dict,
                             score_label=self.score_label, ylabel=self.score_label, xlabel=self.xlabel,
-                            x_fontsize=6, y_fontsize=6, title=self.plt_title)
+                            x_fontsize=9, y_fontsize=9, title=self.plt_title)
 
         return self.filepath_list
