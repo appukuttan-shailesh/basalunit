@@ -709,12 +709,16 @@ class CellModel_Lindroos2018(sciunit.Model):
                 ax.plot(m[1], np.divide(m[0], mean_amp[3]), '.', ms=20, color='k', alpha=0.2)
 
         mean_amp = np.divide(mean_amp, mean_amp[3])
-        ax.plot(x[3:], mean_amp[3:], lw=6, color='k')
+        ax.plot(x[3:], mean_amp[3:], lw=6, color='k', label='Model prediction')
+        ax.legend(fontsize=18)
+        # ax.legend(['Experimental data', 'Model prediction'])
+        # ax.legend(['Experimental data'])
 
         #day et al 2008
         exp_data_file = os.path.join(self.model_path, 'Exp_data/bAP/bAP-DayEtAl2006-D1.csv')
         [x1,y1] = np.loadtxt(exp_data_file, unpack=True)
-        ax.plot(x1, y1, 'brown', lw=6)
+        ax.plot(x1, y1, 'brown', lw=6, label='Experimental data')
+        ax.legend(fontsize=18)
 
         # Hide the right and top spines
         ax.spines['right'].set_visible(False)
