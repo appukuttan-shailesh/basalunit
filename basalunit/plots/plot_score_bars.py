@@ -40,11 +40,11 @@ class ScoresBars:
         axis_obj = sns.barplot(x=scores_floats_df[score_label], y=scores_floats_df.index, palette=np.array(pal)[rank])
 
         plt.subplots_adjust(left=0.3)
-        axis_obj.set(xlabel=xlabel, ylabel=ylabel)
-        # axis_obj.set_ylabel(ylabel, fontsize=y_fontsize)
-        # axis_obj.set_xlabel(xlabel, fontsize=x_fontsize)
-        axis_obj.set_yticklabels(axis_obj.get_yticklabels(), fontsize=y_fontsize)
-        # axis_obj.set_xticklabels(axis_obj.get_xticklabels(), fontsize=x_fontsize)
+        # axis_obj.set(xlabel=xlabel, ylabel=ylabel)
+        axis_obj.set_ylabel(ylabel, fontsize=y_fontsize)
+        axis_obj.set_xlabel(xlabel, fontsize=x_fontsize)
+        axis_obj.set_yticklabels(axis_obj.get_yticklabels(), fontsize=y_fontsize-1)
+        axis_obj.set_xticklabels(axis_obj.get_xticklabels(), fontsize=x_fontsize-1)
         axis_obj.axes.set_title(title, fontsize=11)
 
         # sns.despine()
@@ -66,6 +66,6 @@ class ScoresBars:
         plt.close('all')
         self.score_barplot(filepath=filepath_scores_float, scores_floats=scores_dict,
                             score_label=self.score_label, ylabel=self.score_label, xlabel=self.xlabel,
-                            x_fontsize=9, y_fontsize=9, title=self.plt_title)
+                            x_fontsize=10, y_fontsize=10, title=self.plt_title)
 
         return self.filepath_list
