@@ -124,7 +124,7 @@ class SomaticExcitability_Test(sciunit.Test):
 
         # Saving figure with with scores in the form of bar-plot
         ylabel = 'Curves similarity measures'
-        score_label = '|Score value|'
+        score_label = '|Score value| with log scale'
         fig_title = 'FreqCurrent'
         plt_title = "Frequency-Current curves: \n Model vs Experiment"
         barplot_figure = basalunit_plots.ScoresBars(testObj=self, score_label=score_label, ylabel=ylabel,
