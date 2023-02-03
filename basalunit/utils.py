@@ -515,6 +515,14 @@ class CellModel_Lindroos2018(sciunit.Model):
             self.save_vector(tm, vm, ''.join([self.model_path, '/Results/FI/vm_', sim, '_', str(int(amp*1e3)), '.out']) )
 
 
+    '''-------------------------------------------------------------------------
+                        Somatic Excitability block:
+
+        The firing-frequency response of the neuron model as a function of
+        the input current. Related experimental data by Planert et al.(2013)
+        is also plotted.
+       -------------------------------------------------------------------------
+    '''
     def somatic_excitability(self):
 
         print('starting somatic excitability simulation')
@@ -540,22 +548,79 @@ class CellModel_Lindroos2018(sciunit.Model):
         print('all simulations done!')
 
 
-    def plot_vm(self):
+    def loadFile(self, f):
+
+        x,y = np.loadtxt(f, unpack=True)
+
+        amp = int(f.split('/')[-1].split('_')[2].split('.')[0])
+        #print (f, amp)
+
+        return [ self.getSpikedata_x_y(x,y), amp, [x,y] ]
+
+
+    def getSpikedata_x_y(self, x,y):
 
         '''
-        Reproduces the base plots (validation: figure 2 B and C) for the frontiers paper.
+        getSpikedata_x_y(x,y) -> return count
+
+        Extracts and returns the number of spikes from spike trace data.
+
+        # arguments
+        x = time vector
+        y = vm vector
+
+        # returns
+        count = number of spikes in trace (int)
+
+        # extraction algorithm
+        -threshold y and store list containing index for all points larger than 0 V
+        -sorts out and counts the index that are the first one(s) crossing the threshold, i.e.
+            the first index of each spike. This is done by looping over all index and check if
+            the index is equal to the previous index + 1. If not it is the first index of a
+            spike.
+
+            If no point is above threshold in the trace the function returns 0.
 
         '''
 
+        count = 0
+        spikes = []
+
+        # pick out index for all points above zero potential for potential trace
+        spikeData = [i for i,v in enumerate(y) if v > 0]
+
+        # if no point above 0
+        if len(spikeData) == 0:
+
+            return spikes
+
+        else:
+            # pick first point of each individual transient (spike)...
+            for j in range(0, len(spikeData)-1):
+                if j==0:
+
+                    count += 1
+                    spikes.append(x[spikeData[j]])
+
+                # ...by checking above stated criteria
+                elif not spikeData[j] == spikeData[j-1]+1:
+                    count += 1
+                    spikes.append(x[spikeData[j]])
+
+        return spikes
+
+
+    def get_FreqCurrent(self):
+
+        '''For each current amplitude, it returns the spike times,
+        the input current value and the voltage membrane traces [t,vm]
+        '''
         files  = glob.glob(os.path.join(self.model_path, 'Results/FI/vm_vm_*'))
-
-        f1,a1  = plt.subplots(1,1)
-        fig,ax = plt.subplots(1,1)
-
-        res = {}
 
         num_cores = multiprocessing.cpu_count() #int(np.ceil(multiprocessing.cpu_count() / 2))
         M = Parallel(n_jobs=num_cores)(delayed(self.loadFile)( f ) for f in files)
+
+        res = {}
 
         least_spikes = 100
         last_subThresh = 0
@@ -576,15 +641,38 @@ class CellModel_Lindroos2018(sciunit.Model):
 
             else:
 
-                if m[1] in inj:
-                    a1.plot(m[2][0], m[2][1], 'grey')
-
                 if m[1] > last_subThresh:
 
                     last_subThresh = m[1]
 
         # add last trace without spike
         res[last_subThresh] = 0
+
+        AMP = []
+        inj = np.arange(last_subThresh,480,40)
+
+        for I in inj:
+            AMP.append(res[I])
+
+        return (M, np.array(inj), np.array(AMP), rheob_index)
+
+
+    def plot_vm(self, rheob_index, M, inj, AMP):
+
+        '''
+        Reproduces the base plots (validation: figure 2 B and C) for the frontiers paper.
+
+        '''
+        f1,a1  = plt.subplots(1,1)
+        fig,ax = plt.subplots(1,1)
+
+        for i,m in enumerate(M):
+
+            if len(m[0]) == 0:
+
+                if m[1] in inj:
+
+                    a1.plot(m[2][0], m[2][1], 'grey')
 
         # plot first trace to spike
         a1.plot(M[rheob_index][2][0], M[rheob_index][2][1], 'k', lw=2)
@@ -605,14 +693,6 @@ class CellModel_Lindroos2018(sciunit.Model):
 
             ax.plot(x_i, y_i, 'brown', lw=5, alpha=1, label=label, clip_on=False)
             #plt.legend()
-
-
-        AMP = []
-        inj = np.arange(last_subThresh,480,40)
-
-        for I in inj:
-
-            AMP.append(res[I])
 
         ax.plot(inj, AMP, color='k', lw=7, label='neuron', clip_on=False)
 
@@ -648,6 +728,14 @@ class CellModel_Lindroos2018(sciunit.Model):
         return [fig_path]
 
 
+    '''------------------------------------------------------------------------
+                        Dendritic Excitability block:
+
+            Local change in calcium concentration as a function of somatic
+            distance following a backpropagating action potential.
+            Related experimental data by Day et al.(2008) is also plotted.
+       ------------------------------------------------------------------------
+    '''
     def dendrite_BAP(self):
         # dendritic validation: change in [Ca] following a bAP (validated against Day et al., 2008)
         current = 2000
@@ -789,67 +877,6 @@ class CellModel_Lindroos2018(sciunit.Model):
 
         return [m, dist, x[3300:-1], y[3300:-1]]
 
-
-    def loadFile(self, f):
-
-        x,y = np.loadtxt(f, unpack=True)
-
-        amp = int(f.split('/')[-1].split('_')[2].split('.')[0])
-        #print (f, amp)
-
-        return [self.getSpikedata_x_y(x,y), amp, [x,y] ]
-
-
-    def getSpikedata_x_y(self, x,y):
-
-        '''
-        getSpikedata_x_y(x,y) -> return count
-
-        Extracts and returns the number of spikes from spike trace data.
-
-        # arguments
-        x = time vector
-        y = vm vector
-
-        # returns
-        count = number of spikes in trace (int)
-
-        # extraction algorithm
-        -threshold y and store list containing index for all points larger than 0 V
-        -sorts out and counts the index that are the first one(s) crossing the threshold, i.e.
-            the first index of each spike. This is done by looping over all index and check if
-            the index is equal to the previous index + 1. If not it is the first index of a
-            spike.
-
-            If no point is above threshold in the trace the function returns 0.
-
-        '''
-
-        count = 0
-        spikes = []
-
-        # pick out index for all points above zero potential for potential trace
-        spikeData = [i for i,v in enumerate(y) if v > 0]
-
-        # if no point above 0
-        if len(spikeData) == 0:
-
-            return spikes
-
-        else:
-            # pick first point of each individaul transient (spike)...
-            for j in range(0, len(spikeData)-1):
-                if j==0:
-
-                    count += 1
-                    spikes.append(x[spikeData[j]])
-
-                # ...by checking above stated criteria
-                elif not spikeData[j] == spikeData[j-1]+1:
-                    count += 1
-                    spikes.append(x[spikeData[j]])
-
-        return spikes
 
 # ======================= the MSN class ==================================================
 

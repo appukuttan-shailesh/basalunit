@@ -5,19 +5,20 @@ import basalunit.plots as basalunit_plots
 import json
 import os
 import numpy as np
+import math
 
-class DendriticExcitability_Test(sciunit.Test):
+class SomaticExcitability_Test(sciunit.Test):
 
-    """Tests dendritic excitability as the local change in calcium concentration
-    as a function of somatic distance following a backpropagating
-    action potential (Day et al., 2008)"""
+    """Tests the firing-frequency response of neurons as a function of
+    the input current. More specifically, it compares the current-frequency
+    curve of the model with experimental curves from Planert et al. (2013)"""
     score_type = basalunit_scores.CombineScores
 
-    def __init__(self, model_path=None, observation=None, name="DendriticExcitability_Test", base_directory=None):
+    def __init__(self, model_path=None, observation=None, name="SomaticExcitability_Test", base_directory=None):
 
-        self.description = "Tests dendritic excitability as the local change in \
-        calcium concentration following a backpropagating action potential"
-        require_capabilities = (basalunit_cap.Provides_CaConcentration_Info,)
+        self.description = "Tests the firing-frequency response of neurons as a \
+                            function of the input current."
+        require_capabilities = (basalunit_cap.Provides_FiringFreqVsCurrent_Info,)
 
         if not model_path:
             raise ValueError("Please specify the path to the model directory!")
@@ -27,7 +28,7 @@ class DendriticExcitability_Test(sciunit.Test):
 
         if not observation:
             # Use the path to experimental data, inside Lindroos et al. (2018) model directory
-            observation_path=os.path.join(self.model_path, 'Exp_data/bAP/bAP-DayEtAl2006-D1.csv')
+            observation_path=os.path.join(self.model_path, 'Exp_data/FI/Planert2013-D1-FI-trace1.csv')
             dict_observation = self.get_observation(obs_path=observation_path)
         else:
             raw_observation = dict_observation
@@ -50,7 +51,7 @@ class DendriticExcitability_Test(sciunit.Test):
 
         [x1,y1] = np.loadtxt(obs_path, unpack=True)
 
-        return { "Normalized Ca amplitude": x1, "Somatic distance (µm)": y1 }
+        return { "Frequency (Hz)": x1, "Current (pA)": y1 }
 
 
     def format_data(self, data):
@@ -68,13 +69,11 @@ class DendriticExcitability_Test(sciunit.Test):
     def generate_prediction(self, model, verbose=False):
         self.model = model
         self.model_name = model.name
-        model.dendrite_BAP()
+        model.somatic_excitability()
 
-        [dend_dist, Ca_mean_amp] = model.get_Ca()
-        Ca_mean_amp = np.divide(Ca_mean_amp, Ca_mean_amp[3])
+        raw_prediction = model.get_FreqCurrent()
 
-        raw_prediction = [dend_dist, Ca_mean_amp]
-        prediction = self.format_data(raw_prediction)
+        prediction = self.format_data([ raw_prediction[1], raw_prediction[2] ])
 
         return prediction
 
@@ -92,14 +91,14 @@ class DendriticExcitability_Test(sciunit.Test):
 
         # quantify the difference between the two curves using
         # Discrete Frechet distance
-        scores_dict['Discrete Frechet distance'] = \
+        '''scores_dict['Discrete Frechet distance'] = \
             basalunit_scores.FrechetDistanceScore.compute(observation, prediction).score
-
+        '''
         # quantify the difference between the two curves using
         # area between two curves
-        scores_dict['Area in between'] = \
+        '''scores_dict['Area in between'] = \
             basalunit_scores.AreaInBetweenScore.compute(observation, prediction).score
-
+        '''
         # quantify the difference between the two curves using
         # Curve Length based similarity measure
         scores_dict['Curve Length'] = \
@@ -107,8 +106,13 @@ class DendriticExcitability_Test(sciunit.Test):
 
         # quantify the difference between the two curves using
         # Dynamic Time Warping distance
-        scores_dict['Dynamic Time Warping'] = \
+        '''scores_dict['Dynamic Time Warping'] = \
             basalunit_scores.DynamicTimeWarpingScore.compute(observation, prediction).score
+        '''
+        # Applying a logistic function for bounding the scoring to the range [0,1]
+        '''for key, val in scores_dict.items():
+            scores_dict[key] = 1./( 1 + math.exp(-val) )
+        '''
 
         self.scores_dict = scores_dict
 
@@ -121,16 +125,16 @@ class DendriticExcitability_Test(sciunit.Test):
         # Saving figure with with scores in the form of bar-plot
         ylabel = 'Curves similarity measures'
         score_label = '|Score value|'
-        fig_title = 'Ca_BPA'
-        plt_title = r"$\Delta$Ca concentration, following a backpropagating AP:" + "\n Model vs Experiment"
+        fig_title = 'FreqCurrent'
+        plt_title = "Frequency-Current curves: \n Model vs Experiment"
         barplot_figure = basalunit_plots.ScoresBars(testObj=self, score_label=score_label, ylabel=ylabel,
                                                     fig_title=fig_title, plt_title=plt_title)
         barplot_files = barplot_figure.create()
         self.figures.extend(barplot_files)
 
         # ---------------------- Saving other relevant results ----------------------
-        fig_Ca_model_obs = self.model.plot_Ca()
-        self.figures.extend(fig_Ca_model_obs)
+        fig_FI_model_obs = self.model.plot_vm()
+        self.figures.extend(fig_FI_model_obs)
 
         return self.score
 
