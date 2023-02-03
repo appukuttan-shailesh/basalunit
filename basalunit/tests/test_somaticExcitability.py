@@ -91,14 +91,14 @@ class SomaticExcitability_Test(sciunit.Test):
 
         # quantify the difference between the two curves using
         # Discrete Frechet distance
-        '''scores_dict['Discrete Frechet distance'] = \
+        scores_dict['Discrete Frechet distance'] = \
             basalunit_scores.FrechetDistanceScore.compute(observation, prediction).score
-        '''
+
         # quantify the difference between the two curves using
         # area between two curves
-        '''scores_dict['Area in between'] = \
+        scores_dict['Area in between'] = \
             basalunit_scores.AreaInBetweenScore.compute(observation, prediction).score
-        '''
+
         # quantify the difference between the two curves using
         # Curve Length based similarity measure
         scores_dict['Curve Length'] = \
@@ -106,13 +106,8 @@ class SomaticExcitability_Test(sciunit.Test):
 
         # quantify the difference between the two curves using
         # Dynamic Time Warping distance
-        '''scores_dict['Dynamic Time Warping'] = \
+        scores_dict['Dynamic Time Warping'] = \
             basalunit_scores.DynamicTimeWarpingScore.compute(observation, prediction).score
-        '''
-        # Applying a logistic function for bounding the scoring to the range [0,1]
-        '''for key, val in scores_dict.items():
-            scores_dict[key] = 1./( 1 + math.exp(-val) )
-        '''
 
         self.scores_dict = scores_dict
 

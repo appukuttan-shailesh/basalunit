@@ -43,7 +43,7 @@ class ScoresBars:
         axis_obj.set_ylabel(self.ylabel, fontsize=y_fontsize)
         axis_obj.set_yticklabels(axis_obj.get_yticklabels(), fontsize=y_fontsize-2, rotation=30)
         # axis_obj.set_xticklabels(axis_obj.get_xticklabels(), fontsize=x_fontsize-1)
-        axis_obj.set(xscale='log')
+        axis_obj.set(xscale='symlog')
         axis_obj.axes.set_title(title, fontsize=11)
 
         # sns.despine()
