@@ -71,9 +71,9 @@ class SomaticExcitability_Test(sciunit.Test):
         self.model_name = model.name
         model.somatic_excitability()
 
-        raw_prediction = model.get_FreqCurrent()
+        raw_prediction = model.get_FreqCurrent()[0:2]
 
-        prediction = self.format_data([ raw_prediction[1], raw_prediction[2] ])
+        prediction = self.format_data([ raw_prediction[0], raw_prediction[1] ])
 
         return prediction
 
@@ -119,11 +119,12 @@ class SomaticExcitability_Test(sciunit.Test):
 
         # Saving figure with with scores in the form of bar-plot
         ylabel = 'Curves similarity measures'
-        score_label = '|Score value| with log scale'
+        score_label = r'|Score value| in $\mathit{log}$ scale'
         fig_title = 'FreqCurrent'
         plt_title = "Frequency-Current curves: \n Model vs Experiment"
         barplot_figure = basalunit_plots.ScoresBars(testObj=self, score_label=score_label, ylabel=ylabel,
-                                                    fig_title=fig_title, plt_title=plt_title)
+                                                    fig_title=fig_title, plt_title=plt_title,
+                                                    score_scale='symlog')
         barplot_files = barplot_figure.create()
         self.figures.extend(barplot_files)
 

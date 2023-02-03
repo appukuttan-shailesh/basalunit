@@ -70,7 +70,7 @@ class DendriticExcitability_Test(sciunit.Test):
         self.model_name = model.name
         model.dendrite_BAP()
 
-        [dend_dist, Ca_mean_amp] = model.get_Ca()
+        [dend_dist, Ca_mean_amp] = model.get_Ca()[0:2]
         Ca_mean_amp = np.divide(Ca_mean_amp, Ca_mean_amp[3])
 
         raw_prediction = [dend_dist, Ca_mean_amp]
@@ -120,11 +120,12 @@ class DendriticExcitability_Test(sciunit.Test):
 
         # Saving figure with with scores in the form of bar-plot
         ylabel = 'Curves similarity measures'
-        score_label = '|Score value| with log scale'
+        score_label = r'|Score value| in $\mathit{log}$ scale'
         fig_title = 'Ca_BPA'
         plt_title = r"$\Delta$Ca concentration, following a backpropagating AP:" + "\n Model vs Experiment"
         barplot_figure = basalunit_plots.ScoresBars(testObj=self, score_label=score_label, ylabel=ylabel,
-                                                    fig_title=fig_title, plt_title=plt_title)
+                                                    fig_title=fig_title, plt_title=plt_title,
+                                                    score_scale='symlog')
         barplot_files = barplot_figure.create()
         self.figures.extend(barplot_files)
 

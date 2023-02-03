@@ -654,10 +654,10 @@ class CellModel_Lindroos2018(sciunit.Model):
         for I in inj:
             AMP.append(res[I])
 
-        return (M, np.array(inj), np.array(AMP), rheob_index)
+        return ( np.array(inj), np.array(AMP), M, rheob_index )
 
 
-    def plot_vm(self, rheob_index, M, inj, AMP):
+    def plot_vm(self):
 
         '''
         Reproduces the base plots (validation: figure 2 B and C) for the frontiers paper.
@@ -665,6 +665,8 @@ class CellModel_Lindroos2018(sciunit.Model):
         '''
         f1,a1  = plt.subplots(1,1)
         fig,ax = plt.subplots(1,1)
+
+        ( inj, AMP, M, rheob_index ) = self.get_FreqCurrent()
 
         for i,m in enumerate(M):
 
@@ -679,6 +681,11 @@ class CellModel_Lindroos2018(sciunit.Model):
         a1.plot([10,110], [-20, -20], 'k')
         a1.plot([10, 10], [-20, -10], 'k')
         a1.axis('off')
+
+        plt.show()
+        fig_path = os.path.join(self.model_path, 'Figures', 'vm_profiles.png' )
+        f1.savefig(fig_path)
+        
 
         # FI curve ---------------------------------------------------------------------------------------
         exp_data_path = os.path.join(self.model_path, 'Exp_data/FI/Planert2013-D1-FI-trace*')
@@ -774,7 +781,7 @@ class CellModel_Lindroos2018(sciunit.Model):
                 mean_amp.append( np.mean(res[d]) )
                 x.append(d)
 
-        return [ np.array(x), mean_amp ]
+        return ( np.array(x), mean_amp, M )
 
 
     def plot_Ca(self, fString='Results/Ca/ca*.out'):
@@ -788,10 +795,10 @@ class CellModel_Lindroos2018(sciunit.Model):
 
         fig, ax = plt.subplots(1,1, figsize=(6,8))
 
-        [x, mean_amp] = self.get_Ca(files_path)
+        (x, mean_amp, M) = self.get_Ca(files_path)
 
-        num_cores = multiprocessing.cpu_count()
-        M = Parallel(n_jobs=num_cores)(delayed(self.get_max)( f ) for f in files)
+        # num_cores = multiprocessing.cpu_count()
+        # M = Parallel(n_jobs=num_cores)(delayed(self.get_max)( f ) for f in files)
         for m in M:
             if m[1] >= 40:
                 ax.plot(m[1], np.divide(m[0], mean_amp[3]), '.', ms=20, color='k', alpha=0.2)
@@ -826,7 +833,7 @@ class CellModel_Lindroos2018(sciunit.Model):
 
         ax.tick_params(width=2, length=4)
 
-        ax.set_ylabel('Normalized Ca amplitude', fontsize=25)
+        ax.set_ylabel('Normalized [Ca] amplitude', fontsize=25)
         ax.set_xlabel('Somatic distance (µm)', fontsize=25)
         ax.set_title(r'$\Delta$Ca concentration' + '\n following a bAP', fontsize=30)
         # size of frame
