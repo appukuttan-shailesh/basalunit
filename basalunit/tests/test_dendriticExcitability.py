@@ -19,6 +19,13 @@ class DendriticExcitability_Test(sciunit.Test):
         calcium concentration following a backpropagating action potential"
         require_capabilities = (basalunit_cap.Provides_CaConcentration_Info,)
 
+        if not base_directory:
+            base_directory = "./validation_results/DendriticExcitability_Test"
+        self.path_test_output = base_directory
+        # create output directory
+        if not os.path.exists(self.path_test_output):
+            os.makedirs(self.path_test_output)
+
         if not model_path:
             raise ValueError("Please specify the path to the model directory!")
         if not os.path.isdir(model_path):
@@ -30,15 +37,15 @@ class DendriticExcitability_Test(sciunit.Test):
             observation_path=os.path.join(self.model_path, 'Exp_data/bAP/bAP-DayEtAl2006-D1.csv')
             dict_observation = self.get_observation(obs_path=observation_path)
         else:
-            raw_observation = dict_observation
-        self.observation = dict_observation
+            dict_observation = observation
+        raw_observation = list(dict_observation.values())
+        self.observation = self.format_data(raw_observation)
 
-        if not base_directory:
-            base_directory = "./validation_results"
-        self.path_test_output = base_directory
-        # create output directory
-        if not os.path.exists(self.path_test_output):
-            os.makedirs(self.path_test_output)
+        self.observation_path=os.path.join(self.path_test_output, 'Experiment-MSND1-Ca_bAP.csv')
+        f = open(self.observation_path, 'w')
+        np.savetxt(f, self.observation, delimiter=' ')
+        f.close()
+
         self.figures = []
 
 
@@ -68,9 +75,9 @@ class DendriticExcitability_Test(sciunit.Test):
     def generate_prediction(self, model, verbose=False):
         self.model = model
         self.model_name = model.name
-        model.dendrite_BAP()
+        model.dendrite_Ca_bAP()
 
-        [dend_dist, Ca_mean_amp] = model.get_Ca()[0:2]
+        [dend_dist, Ca_mean_amp] = model.get_Ca_bAP()[0:2]
         Ca_mean_amp = np.divide(Ca_mean_amp, Ca_mean_amp[3])
 
         raw_prediction = [dend_dist, Ca_mean_amp]
@@ -81,9 +88,6 @@ class DendriticExcitability_Test(sciunit.Test):
 
     def compute_score(self, observation, prediction, verbose=True):
         """Implementation of sciunit.Test.score_prediction"""
-
-        raw_observation = list(observation.values())
-        observation = self.format_data(raw_observation)
 
         scores_dict = dict()
         # quantify the difference between the two curves using Partial Curve Mapping
@@ -121,7 +125,7 @@ class DendriticExcitability_Test(sciunit.Test):
         # Saving figure with with scores in the form of bar-plot
         ylabel = 'Curves similarity measures'
         score_label = r'|Score value| in $\mathit{log}$ scale'
-        fig_title = 'Ca_BPA'
+        fig_title = 'Ca_bPA'
         plt_title = r"$\Delta$Ca concentration, following a backpropagating AP:" + "\n Model vs Experiment"
         barplot_figure = basalunit_plots.ScoresBars(testObj=self, score_label=score_label, ylabel=ylabel,
                                                     fig_title=fig_title, plt_title=plt_title,
@@ -130,7 +134,7 @@ class DendriticExcitability_Test(sciunit.Test):
         self.figures.extend(barplot_files)
 
         # ---------------------- Saving other relevant results ----------------------
-        fig_Ca_model_obs = self.model.plot_Ca()
+        fig_Ca_model_obs = self.model.plot_Ca(fString_exp=self.observation_path)
         self.figures.extend(fig_Ca_model_obs)
 
         return self.score

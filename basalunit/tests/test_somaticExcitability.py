@@ -20,6 +20,13 @@ class SomaticExcitability_Test(sciunit.Test):
                             function of the input current."
         require_capabilities = (basalunit_cap.Provides_FiringFreqVsCurrent_Info,)
 
+        if not base_directory:
+            base_directory = "./validation_results/SomaticExcitability_Test"
+        self.path_test_output = base_directory
+        # create output directory
+        if not os.path.exists(self.path_test_output):
+            os.makedirs(self.path_test_output)
+
         if not model_path:
             raise ValueError("Please specify the path to the model directory!")
         if not os.path.isdir(model_path):
@@ -28,18 +35,18 @@ class SomaticExcitability_Test(sciunit.Test):
 
         if not observation:
             # Use the path to experimental data, inside Lindroos et al. (2018) model directory
-            observation_path=os.path.join(self.model_path, 'Exp_data/FI/Planert2013-D1-FI-trace1.csv')
-            dict_observation = self.get_observation(obs_path=observation_path)
+            self.observation_path=os.path.join(self.model_path, 'Exp_data/FI/Planert2013-D1-FI-trace2.csv')
+            dict_observation = self.get_observation(obs_path=self.observation_path)
         else:
-            raw_observation = dict_observation
-        self.observation = dict_observation
+            dict_observation = observation
+        raw_observation = list(dict_observation.values())
+        self.observation = self.format_data(raw_observation)
 
-        if not base_directory:
-            base_directory = "./validation_results"
-        self.path_test_output = base_directory
-        # create output directory
-        if not os.path.exists(self.path_test_output):
-            os.makedirs(self.path_test_output)
+        self.observation_path=os.path.join(self.path_test_output, 'Experiment-MSND1-FI-trace.csv')
+        f = open(self.observation_path, 'w')
+        np.savetxt(f, self.observation, delimiter=' ')
+        f.close()
+
         self.figures = []
 
 
@@ -80,9 +87,6 @@ class SomaticExcitability_Test(sciunit.Test):
 
     def compute_score(self, observation, prediction, verbose=True):
         """Implementation of sciunit.Test.score_prediction"""
-
-        raw_observation = list(observation.values())
-        observation = self.format_data(raw_observation)
 
         scores_dict = dict()
         # quantify the difference between the two curves using Partial Curve Mapping
@@ -129,7 +133,7 @@ class SomaticExcitability_Test(sciunit.Test):
         self.figures.extend(barplot_files)
 
         # ---------------------- Saving other relevant results ----------------------
-        fig_FI_model_obs = self.model.plot_vm()
+        fig_FI_model_obs = self.model.plot_vm(fString_exp=self.observation_path)
         self.figures.extend(fig_FI_model_obs)
 
         return self.score

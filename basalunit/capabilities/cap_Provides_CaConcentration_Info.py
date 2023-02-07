@@ -9,7 +9,7 @@ class Provides_CaConcentration_Info(sciunit.Capability):
     following a backpropagating action potential
     """
 
-    def get_Ca(self):
+    def get_Ca_bAP(self):
         """
         Must return a 2D-list with two arrays containing information of the type:
             [[soma_distance_array], [calcium_concentration_array]]
