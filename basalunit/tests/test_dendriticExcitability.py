@@ -57,7 +57,7 @@ class DendriticExcitability_Test(sciunit.Test):
 
         [x1,y1] = np.loadtxt(obs_path, unpack=True)
 
-        return { "Normalized Ca amplitude": x1, "Somatic distance (µm)": y1 }
+        return { "Somatic distance (µm)": x1, "Normalized Ca amplitude": y1 }
 
 
     def format_data(self, data):
