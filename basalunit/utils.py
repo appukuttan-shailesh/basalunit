@@ -610,10 +610,10 @@ class CellModel_Lindroos2018(sciunit.Model):
         return spikes
 
 
-    def get_FreqCurrent(self):
+    def get_FreqCurrent_SpikeTimes(self):
 
-        '''For each current amplitude, it returns the spike times,
-        the input current value and the voltage membrane traces [t,vm]
+        '''It computes the neuronal firing rate for each current amplitude,
+           besides the spike times
         '''
         files  = glob.glob(os.path.join(self.model_path, 'Results/FI/vm_vm_*'))
 
@@ -653,7 +653,19 @@ class CellModel_Lindroos2018(sciunit.Model):
         for I in inj:
             AMP.append(res[I])
 
-        return ( np.array(inj), np.array(AMP), M, rheob_index )
+        self.inj_c = np.array(inj)
+        self.AMP = np.array(AMP)
+        self.M = M
+        self.rheob_index = rheob_index
+
+
+    def get_FreqCurrent(self):
+
+        '''It computes the neuronal firing rate for each current amplitude
+        '''
+        self.get_FreqCurrent_SpikeTimes()
+
+        return [ self.inj_c, self.AMP ]
 
 
     def plot_vm(self,fString_exp='Exp_data/FI/Planert2013-D1-FI-trace1.csv'):
@@ -661,15 +673,11 @@ class CellModel_Lindroos2018(sciunit.Model):
         '''
         Reproduces the base plots (validation: figure 2 B and C) for the frontiers paper.
         '''
-        fig,ax = plt.subplots(2,1, figsize=(8,15))
-        fig.tight_layout()
-        # f1,a1  = plt.subplots(1,1)
-        # fig,ax = plt.subplots(1,1)
-
-        ( inj_c, AMP, M, rheob_index ) = self.get_FreqCurrent()
+        fig,ax = plt.subplots(2,1, figsize=(8,9))
+        fig.subplots_adjust(hspace=0.4)
 
         inj = np.arange(-100,345,40)
-        for i,m in enumerate(M):
+        for i,m in enumerate(self.M):
 
             if len(m[0]) <= 0:
 
@@ -678,11 +686,27 @@ class CellModel_Lindroos2018(sciunit.Model):
                     ax[0].plot(m[2][0], m[2][1], 'grey')
 
         # plot first trace to spike
-        ax[0].plot(M[rheob_index][2][0], M[rheob_index][2][1], 'k', lw=2)
-        ax[0].plot([10,110], [-20, -20], 'k')
-        ax[0].plot([10, 10], [-20, -10], 'k')
+        ax[0].plot(self.M[self.rheob_index][2][0], self.M[self.rheob_index][2][1], 'k', lw=2)
+        # ax[0].plot([10,110], [-20, -20], 'k')
+        # ax[0].plot([10, 10], [-20, -10], 'k')
         # ax[0].axis('off')
-        ax[0].set_title('Voltage response', fontsize=30)
+
+        # Hide the right and top spines
+        ax[0].spines['right'].set_visible(False)
+        ax[0].spines['top'].set_visible(False)
+
+        # Only show ticks on the left and bottom spines
+        ax[0].yaxis.set_ticks_position('left')
+        ax[0].xaxis.set_ticks_position('bottom')
+
+        # size of frame
+        for axis in ['bottom','left']:
+            ax[0].spines[axis].set_linewidth(3)
+
+        ax[0].tick_params(axis='both', labelsize=12)
+        ax[0].set_ylabel('Voltage (mV)', fontsize=14)
+        ax[0].set_xlabel('Time (ms)', fontsize=14)
+        ax[0].set_title('Voltage response', fontsize=25)
 
         plt.show()
         # fig_path = os.path.join(self.model_path, 'Figures', 'vm_profiles.png' )
@@ -700,10 +724,10 @@ class CellModel_Lindroos2018(sciunit.Model):
                 label = ''
 
             ax[1].plot(x_i, y_i, 'brown', lw=5, alpha=1, label=label, clip_on=False)
-            plt.legend(fontsize=12)
+            plt.legend(fontsize=14)
 
-        ax[1].plot(inj_c, AMP, color='k', lw=7, label='Model prediction', clip_on=False)
-        plt.legend(fontsize=12)
+        ax[1].plot(self.inj_c, self.AMP, color='k', lw=7, label='Model prediction', clip_on=False)
+        plt.legend(fontsize=14)
 
         # Hide the right and top spines
         ax[1].spines['right'].set_visible(False)
@@ -719,23 +743,23 @@ class CellModel_Lindroos2018(sciunit.Model):
         # set ticks
         yticks = np.arange(10,31,10)
         ax[1].set_yticks(yticks)
-        ax[1].set_yticklabels(yticks, fontsize=10)
+        ax[1].set_yticklabels(yticks, fontsize=12)
         xticks = np.arange(150,760,150)
         ax[1].set_xticks(xticks)
-        ax[1].set_xticklabels(xticks, fontsize=10)
+        ax[1].set_xticklabels(xticks, fontsize=12)
         ax[1].tick_params(width=3, length=6)
 
         # size of frame
         for axis in ['bottom','left']:
-            ax[1].spines[axis].set_linewidth(4)
+            ax[1].spines[axis].set_linewidth(3)
 
-        ax[1].set_ylabel('Frequency (Hz)', fontsize=15)
-        ax[1].set_xlabel('Current (pA)', fontsize=15)
+        ax[1].set_ylabel('Frequency (Hz)', fontsize=14)
+        ax[1].set_xlabel('Current (pA)', fontsize=14)
         ax[1].set_title('FI-curve', fontsize=25)
 
         plt.show()
         # fig_path = os.path.join(self.model_path, 'Figures', 'FI_profiles.png' )
-        fig_path = os.path.join(self.model_path, 'Figures', 'vm_FI_profiles.png' )
+        fig_path = os.path.join(self.model_path, 'Figures', 'vm_FI_profiles.pdf' )
         fig.savefig(fig_path)
 
         return [fig_path]
@@ -758,7 +782,7 @@ class CellModel_Lindroos2018(sciunit.Model):
                     sim='ca'                    )
 
 
-    def get_Ca_bAP(self, fString='Results/Ca/ca*.out'):
+    def get_Ca_bAP_max(self, fString='Results/Ca/ca*.out'):
 
         '''
         gets resulting Ca as distance dependent using all traces matching fString
@@ -787,7 +811,19 @@ class CellModel_Lindroos2018(sciunit.Model):
                 mean_amp.append( np.mean(res[d]) )
                 x.append(d)
 
-        return ( np.array(x), mean_amp, M )
+        self.M = M
+        self.dend_dist = np.array(x)
+        self.Ca_mean_amp = mean_amp
+
+
+    def get_Ca_bAP(self):
+
+        ''' Returns the dendritic distance from the soma and the
+            Calcium concentrations
+        '''
+        self.get_Ca_bAP_max()
+
+        return [ self.dend_dist, self.Ca_mean_amp ]
 
 
     def plot_Ca(self, fString='Results/Ca/ca*.out', fString_exp='Exp_data/bAP/bAP-DayEtAl2006-D1.csv'):
@@ -801,16 +837,12 @@ class CellModel_Lindroos2018(sciunit.Model):
 
         fig, ax = plt.subplots(1,1, figsize=(6,8))
 
-        (x, mean_amp, M) = self.get_Ca_bAP(files_path)
-
-        # num_cores = multiprocessing.cpu_count()
-        # M = Parallel(n_jobs=num_cores)(delayed(self.get_max)( f ) for f in files)
-        for m in M:
+        for m in self.M:
             if m[1] >= 40:
-                ax.plot(m[1], np.divide(m[0], mean_amp[3]), '.', ms=20, color='k', alpha=0.2)
+                ax.plot(m[1], np.divide(m[0], self.Ca_mean_amp[3]), '.', ms=20, color='k', alpha=0.2)
 
-        mean_amp = np.divide(mean_amp, mean_amp[3])
-        ax.plot(x[3:], mean_amp[3:], lw=6, color='k', label='Model prediction')
+        mean_amp = np.divide(self.Ca_mean_amp, self.Ca_mean_amp[3])
+        ax.plot(self.dend_dist[3:], mean_amp[3:], lw=6, color='k', label='Model prediction')
         ax.legend(fontsize=18)
 
         #day et al 2008
@@ -871,7 +903,7 @@ class CellModel_Lindroos2018(sciunit.Model):
         a.axis('off')
         plt.show()
 
-        fig_path = os.path.join(self.model_path, 'Figures', 'Ca_bAP.png' )
+        fig_path = os.path.join(self.model_path, 'Figures', 'Ca_bAP.pdf' )
         fig.savefig(fig_path)
 
         return [fig_path]

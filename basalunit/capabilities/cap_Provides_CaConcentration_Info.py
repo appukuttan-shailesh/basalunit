@@ -11,7 +11,8 @@ class Provides_CaConcentration_Info(sciunit.Capability):
 
     def get_Ca_bAP(self):
         """
-        Must return a 2D-list with two arrays containing information of the type:
-            [[soma_distance_array], [calcium_concentration_array]]
+        Must return a 2D-list with two Numpy arrays containing information about
+        the dendritic distance from the soma and the Calcium concentrations:
+        [ numpy.array(soma_distances), numpy.array(calcium_concentrations) ]
         """
         raise NotImplementedError()

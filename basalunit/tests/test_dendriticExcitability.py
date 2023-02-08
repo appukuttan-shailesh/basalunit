@@ -67,7 +67,7 @@ class DendriticExcitability_Test(sciunit.Test):
 
         Returns the transpose of the 2D-data input, after discarding NaN values
         """
-        data_vals = [ coord_v[~np.isnan(coord_v)] for coord_v in data]
+        data_vals = [ coord_v[~np.isnan(coord_v)] for coord_v in data ]
 
         return np.transpose(data_vals)
 
@@ -77,9 +77,8 @@ class DendriticExcitability_Test(sciunit.Test):
         self.model_name = model.name
         model.dendrite_Ca_bAP()
 
-        [dend_dist, Ca_mean_amp] = model.get_Ca_bAP()[0:2]
+        [ dend_dist, Ca_mean_amp ] = model.get_Ca_bAP()
         Ca_mean_amp = np.divide(Ca_mean_amp, Ca_mean_amp[3])
-
         raw_prediction = [dend_dist, Ca_mean_amp]
         prediction = self.format_data(raw_prediction)
 
@@ -124,8 +123,8 @@ class DendriticExcitability_Test(sciunit.Test):
 
         # Saving figure with with scores in the form of bar-plot
         ylabel = 'Curves similarity measures'
-        score_label = r'|Score value| in $\mathit{log}$ scale'
-        fig_title = 'Ca_bPA'
+        score_label = r'|Score| value in $\mathit{log}$ scale'
+        fig_title = 'Ca_bAP'
         plt_title = r"$\Delta$Ca concentration, following a backpropagating AP:" + "\n Model vs Experiment"
         barplot_figure = basalunit_plots.ScoresBars(testObj=self, score_label=score_label, ylabel=ylabel,
                                                     fig_title=fig_title, plt_title=plt_title,
