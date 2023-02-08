@@ -58,7 +58,7 @@ class SomaticExcitability_Test(sciunit.Test):
 
         [x1,y1] = np.loadtxt(obs_path, unpack=True)
 
-        return { "Frequency (Hz)": x1, "Current (pA)": y1 }
+        return { "Current (pA)": x1, "Frequency (Hz)": y1 }
 
 
     def format_data(self, data):
