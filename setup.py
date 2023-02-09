@@ -16,8 +16,8 @@ json_files = package_files('basalunit/tests/somafeat_stim')
 
 setup(
     name='basalunit',
-    version='1.1.0',
-    author='Shailesh Appukuttan',
+    version='1.2.0',
+    author='Shailesh Appukuttan; Pedro García-Rodríguez',
     author_email='shailesh.appukuttan@unic.cnrs-gif.fr',
     packages=['basalunit',
               'basalunit.capabilities',
